@@ -1,0 +1,59 @@
+services:
+  auth-service:
+    build:
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13690:13690
+    expose:
+      - 13690
+    volumes:
+      - .:/app/auth-service
+    networks:
+      - nats
+    depends_on:
+      nats:
+        condition: service_started
+      postgres: 
+        condition: service_healthy
+
+
+  postgres:
+    image: postgres
+    command: 
+    - -p 5434
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1789
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5434"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5434:5434
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    networks:
+      - nats
+
+  nats:
+    image: nats
+    ports:
+      - 4222:4222
+    networks:
+      - nats
+    depends_on:
+      postgres: 
+        condition: service_healthy
+volumes:
+  postgres-db:
+
+networks:
+  nats:
+    name: nats
+
+
+  

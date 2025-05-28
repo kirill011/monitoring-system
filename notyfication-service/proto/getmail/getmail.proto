@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = ".;pbgetmail";
+
+package pbmessage;
+
+message GetEmailReq {
+    repeated int32 UserID = 1;
+}
+
+message GetEmailResp {
+    repeated string Email = 1;
+}

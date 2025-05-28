@@ -1,0 +1,21 @@
+services:
+  notification-service:
+    build:
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13691:13691
+    expose:
+      - 13691
+    volumes:
+      - .:/app/notification-service
+    networks:
+      - nats
+
+networks:
+  nats:
+    name: nats
+
+
+  
