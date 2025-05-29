@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = ".;pbdevices";
+
+package pbmessage;
+
+message Device {
+    string DeviceType = 1;
+	string Address = 2;
+}
+
+message GetResponsibleReq {
+    int32 DeviceID = 1;
+}
+
+message GetResponsibleResp {
+    repeated int32 ResponsibleID = 1;
+}

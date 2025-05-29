@@ -8,7 +8,7 @@ type Auth interface {
 	Rollback() error
 
 	Create(opts CreateUserOpts) (CreateUserResult, error)
-	Read(ctx context.Context, id int) (ReadUsersResult, error)
+	Read(ctx context.Context) (ReadUsersResult, error)
 	Update(ctx context.Context, opts UpdateUsersOpts) error
 	Delete(ctx context.Context, id int) error
 	Authorize(opts AuthorizeOpts) (int, error)

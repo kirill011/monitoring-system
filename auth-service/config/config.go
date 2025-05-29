@@ -13,7 +13,7 @@ type Config struct {
 	Logger   Logger
 	Postgres PostgresConfig
 	App      AppConfig
-	Server   ServerConfig
+	Token    Token
 	Nats     NatsConfig
 }
 
@@ -33,11 +33,9 @@ type AppConfig struct {
 	ShutdownTimeout time.Duration `env:"APP_SHUTDOWN_TIMEOUT,required"`
 }
 
-type ServerConfig struct {
-	JwtKey        string        `env:"SERVER_JWT_KEY,required"`
-	Addr          string        `env:"SERVER_ADDR,required"`
-	TokenLifeTime time.Duration `env:"SERVER_TOKEN_LIFE_TIME,required"`
-	LogQuerys     bool          `env:"SERVER_LOG_QUERYS"`
+type Token struct {
+	JWTKey        string        `env:"TOKEN_JWT_KEY,required"`
+	TokenLifeTime time.Duration `env:"TOKEN_LIFE_TIME"`
 }
 
 type NatsConfig struct {

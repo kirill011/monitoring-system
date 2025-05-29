@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option go_package = ".;pbusers";
+
+package pbusers;
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+    int32 ID = 1;        
+	string Name = 2;      
+	string Email = 3;     
+	string Password = 4;  
+	google.protobuf.Timestamp CreatedAt = 5;
+	google.protobuf.Timestamp UpdatedAt = 6;
+}
+
+message CreateReq{
+    User User = 1;
+}
+
+message CreateResp{
+    User Created = 1;
+    string Error = 2;
+}
+
+message ReadResp {
+    repeated User Users = 1;
+    string Error = 2;
+}
+
+message UpdateReq {
+    User User = 1;
+}
+
+message UpdateResp {
+    string Error = 1;
+}
+
+message DeleteReq {
+    int32 ID = 1;
+}
+
+message DeleteResp {
+    string Error = 1;
+}
+
+message AuthReq {
+    string Email = 1;
+    string Password = 2;
+}
+
+message AuthResp {
+    string Token = 1;
+    string Error = 2; 
+}

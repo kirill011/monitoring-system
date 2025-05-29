@@ -14,6 +14,4 @@ RUN go mod download && go mod verify
 
 RUN go build -o /bin/auth-service /app/monitoring-system/auth-service/cmd/main.go
 
-EXPOSE 13690
-
 CMD ["/bin/auth-service"]

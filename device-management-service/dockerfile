@@ -1,0 +1,19 @@
+FROM golang:1.23.0-alpine
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash openssh
+
+WORKDIR /app
+
+RUN mkdir -p /app/monitoring-system/device-management-service
+WORKDIR /app/monitoring-system/device-management-service
+
+COPY . .
+
+RUN go mod download && go mod verify
+
+RUN go build -o /bin/device-management-service /app/monitoring-system/device-management-service/cmd/main.go
+
+EXPOSE 13692
+
+CMD ["/bin/device-management-service"]

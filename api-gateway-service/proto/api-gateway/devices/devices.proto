@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option go_package = ".;pbdevices";
+
+package pbdevices;
+
+import "google/protobuf/timestamp.proto";
+
+message Device {
+	int32 ID = 1;
+	string Name = 2;
+	string DeviceType = 3;
+	string Address = 4; 
+	repeated int32 Responsible = 5;
+	google.protobuf.Timestamp CreatedAt = 6;
+	google.protobuf.Timestamp UpdatedAt = 7;
+}
+
+message CreateReq {
+    Device Device = 1;
+}
+
+message CreateResp{
+    Device Created = 1;
+    string Error = 2;
+}
+
+message ReadResp {
+    repeated Device Devices = 1;
+    string Error = 2;
+}
+
+message UpdateReq {
+    Device Device = 1;
+}
+
+message UpdateResp {
+    string Error = 1;
+}
+
+message DeleteReq {
+    int32 ID = 1;
+}
+
+message DeleteResp{
+    string Error = 1;
+}

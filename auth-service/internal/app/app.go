@@ -7,7 +7,6 @@ import (
 	"auth-service/config"
 	"auth-service/internal/repo/pg"
 	"auth-service/internal/services"
-	"auth-service/internal/transport/http"
 	natslisteners "auth-service/internal/transport/nats"
 	"auth-service/pkg/closer"
 	"auth-service/pkg/logger"
@@ -47,9 +46,11 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 	authService := services.NewAuthService(authRepo)
 
 	listeners := natslisteners.NewListener(natslisteners.Config{
-		NatsConn:    nats.NatsConn,
-		AuthService: authService,
-		Log:         log,
+		NatsConn:      nats.NatsConn,
+		AuthService:   authService,
+		TokenLifeTime: cfg.Token.TokenLifeTime,
+		JWTKey:        cfg.Token.JWTKey,
+		Log:           log,
 	})
 
 	go func() {
@@ -59,24 +60,6 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		}
 	}()
 
-	httpServer := http.NewServer(http.Config{
-		AuthService:   authService,
-		Log:           log,
-		JwtKey:        cfg.Server.JwtKey,
-		TokenLifeTime: cfg.Server.TokenLifeTime,
-		Addr:          cfg.Server.Addr,
-		LogQuerys:     cfg.Server.LogQuerys,
-	})
-
-	go func() {
-		if err = httpServer.Run(); err != nil {
-			log.Error(fmt.Sprintf("error occurred while running HTTP server: %v", err))
-			stop()
-		}
-	}()
-
-	log.Info("start http server", zap.String("listen_on", cfg.Server.Addr))
-
 	// Shutdown
 	<-ctx.Done()
 
@@ -85,7 +68,6 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 	closer := closer.Closer{}
 
 	closer.Add(nats.Close)
-	closer.Add(httpServer.Stop)
 	closer.Add(postgresDB.Close)
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.App.ShutdownTimeout)

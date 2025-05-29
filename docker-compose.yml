@@ -1,24 +1,5 @@
 services:
-  notification-service:
-    build:
-      context: ./notyfication-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13691:13691
-    expose:
-      - 13691
-    volumes:
-      - .:/app/notification-service
-    networks:
-      - nats
-    depends_on:
-      - auth-service
-
   auth-service:
-    tty: true
-    stdin_open: true
     build:
       context: ./auth-service
       dockerfile: Dockerfile
@@ -26,8 +7,6 @@ services:
     stop_grace_period: 10s
     ports:
       - 13690:13690
-    expose:
-      - 13690
     volumes:
       - .:/app/auth-service
     networks:
@@ -35,11 +14,10 @@ services:
     depends_on:
       nats:
         condition: service_started
-      postgres: 
+      postgres-auth: 
         condition: service_healthy
 
-
-  postgres:
+  postgres-auth:
     image: postgres
     command: 
     - -p 5434
@@ -55,9 +33,94 @@ services:
     ports:
       - 5434:5434
     volumes:
-      - postgres-db:/var/lib/postgresql/data
+      - postgres-auth-db:/var/lib/postgresql/data
     networks:
       - nats
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13691:13691
+    expose:
+      - 13691
+    volumes:
+      - .:/app/notification-service
+    networks:
+      - nats
+    depends_on:
+      auth-service:
+        condition: service_started
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  device-management-service:
+    build:
+      context: ./device-management-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13692:13692
+    volumes:
+      - .:/app/device-management-service
+    networks:
+      - nats
+    depends_on:
+      auth-service:
+       condition: service_started
+      postgres-device-management:
+        condition: service_started
+      nats: 
+        condition: service_started
+
+  postgres-device-management:
+    image: postgres
+    command: 
+    - -p 5435
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1789
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5434"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5435:5435
+    volumes:
+      - postgres-device-management-db:/var/lib/postgresql/data
+    networks:
+      - nats
+
+  api-gateway-service:
+    build:
+      context: ./api-gateway-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13693:13693
+    expose:
+      - 13693
+    volumes:
+      - .:/app/api-gateway-service
+    networks:
+      - nats
+    depends_on:
+      auth-service:
+        condition: service_started
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+
 
   nats:
     image: nats
@@ -65,12 +128,11 @@ services:
       - 4222:4222
     networks:
       - nats
-    depends_on:
-      postgres: 
-        condition: service_healthy
 
 volumes:
-  postgres-db:
+  postgres-auth-db:
+  postgres-device-management-db:
+
 
 networks:
   nats:

@@ -12,7 +12,7 @@ import (
 
 type Auth interface {
 	Create(ctx context.Context, params CreateUserParams) (CreateUserResult, error)
-	Read(ctx context.Context, userID int) (ReadResult, error)
+	Read(ctx context.Context) (ReadResult, error)
 	Update(ctx context.Context, params UpdateUsersParams) error
 	Delete(ctx context.Context, userID int) error
 
@@ -44,8 +44,10 @@ type (
 	}
 
 	UpdateUsersParams struct {
-		ID   int
-		Name *string
+		ID       int
+		Name     *string
+		Email    *string
+		Password *string
 	}
 
 	ReadResult struct {
@@ -90,14 +92,14 @@ func (s *AuthService) Create(ctx context.Context, params CreateUserParams) (Crea
 	}, nil
 }
 
-func (s *AuthService) Read(ctx context.Context, userID int) (ReadResult, error) {
+func (s *AuthService) Read(ctx context.Context) (ReadResult, error) {
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return ReadResult{}, fmt.Errorf("s.repo.BeginTx: %w", err)
 	}
 	defer tx.Rollback()
 
-	ret, err := tx.Read(ctx, userID)
+	ret, err := tx.Read(ctx)
 	if err != nil {
 		return ReadResult{}, fmt.Errorf("tx.Read: %w", err)
 	}
@@ -113,6 +115,12 @@ func (s *AuthService) Read(ctx context.Context, userID int) (ReadResult, error) 
 }
 
 func (s *AuthService) Update(ctx context.Context, params UpdateUsersParams) error {
+	if params.Password != nil {
+		h := sha1.New() //nolint:gosec
+		h.Write([]byte(*params.Password))
+		passHash := hex.EncodeToString(h.Sum(nil))
+		params.Password = &passHash
+	}
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return fmt.Errorf("s.repo.BeginTx: %w", err)
@@ -120,8 +128,10 @@ func (s *AuthService) Update(ctx context.Context, params UpdateUsersParams) erro
 	defer tx.Rollback()
 
 	err = tx.Update(ctx, repo.UpdateUsersOpts{
-		ID:   params.ID,
-		Name: params.Name,
+		ID:       params.ID,
+		Name:     params.Name,
+		Email:    params.Email,
+		Password: params.Password,
 	})
 	if err != nil {
 		return fmt.Errorf("s.repo.Update: %w", err)
@@ -136,9 +146,20 @@ func (s *AuthService) Update(ctx context.Context, params UpdateUsersParams) erro
 }
 
 func (s *AuthService) Delete(ctx context.Context, userID int) error {
-	err := s.repo.Delete(ctx, userID)
+	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
-		return fmt.Errorf("s.repo.Delete: %w", err)
+		return fmt.Errorf("s.repo.BeginTx: %w", err)
+	}
+	defer tx.Rollback()
+
+	err = tx.Delete(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("tx.Delete: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("tx.Commit: %w", err)
 	}
 
 	return nil

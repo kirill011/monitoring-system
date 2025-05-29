@@ -119,7 +119,7 @@ select id, name, email, created_at, updated_at from users
 where deleted_at is null;
 `
 
-func (r *authRepo) Read(ctx context.Context, id int) (repo.ReadUsersResult, error) {
+func (r *authRepo) Read(ctx context.Context) (repo.ReadUsersResult, error) {
 	var result repo.ReadUsersResult
 	err := r.tx.SelectContext(ctx, &result.Users, usersRepoQuerySelectUsers)
 	if err != nil {
@@ -132,6 +132,8 @@ func (r *authRepo) Read(ctx context.Context, id int) (repo.ReadUsersResult, erro
 const usersRepoQueryUpdateUser = `
 update users 
 set name = coalesce(:name, name),
+	email = coalesce(:email, email),
+	password = coalesce(:password, password),
 	updated_at = :updated_at
 where id = :id and deleted_at is null;
 `
@@ -141,10 +143,14 @@ func (r *authRepo) Update(ctx context.Context, opts repo.UpdateUsersOpts) error 
 		struct {
 			ID        int       `db:"id"`
 			Name      *string   `db:"name"`
+			Email     *string   `db:"email"`
+			Password  *string   `db:"password"`
 			UpdatedAt time.Time `db:"updated_at"`
 		}{
 			ID:        opts.ID,
 			Name:      opts.Name,
+			Email:     opts.Email,
+			Password:  opts.Password,
 			UpdatedAt: time.Now(),
 		},
 	)
@@ -229,7 +235,7 @@ func (r *authRepo) GetEmailsByIDs(ctx context.Context, userIDs []int32) ([]strin
 	}
 	query, args, err = sqlx.In(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("sqlx.Named: %w", err)
+		return nil, fmt.Errorf("sqlx.In: %w", err)
 	}
 	query = r.tx.Rebind(query)
 
