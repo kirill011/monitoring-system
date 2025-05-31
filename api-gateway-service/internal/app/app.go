@@ -9,6 +9,8 @@ import (
 	"api-gateway-service/internal/transport/http"
 	"api-gateway-service/internal/transport/natshandlers/auth"
 	"api-gateway-service/internal/transport/natshandlers/devices"
+	"api-gateway-service/internal/transport/natshandlers/reports"
+	"api-gateway-service/internal/transport/natshandlers/tags"
 	"api-gateway-service/pkg/closer"
 	"api-gateway-service/pkg/logger"
 	"api-gateway-service/pkg/nats"
@@ -38,6 +40,16 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		Timeout:  cfg.Nats.Timeout,
 	})
 
+	tagsHandlers := tags.NewTagsHandlers(tags.Config{
+		NatsConn: nats.NatsConn,
+		Timeout:  cfg.Nats.Timeout,
+	})
+
+	reportsHandlers := reports.NewReportsHandlers(reports.Config{
+		NatsConn: nats.NatsConn,
+		Timeout:  cfg.Nats.Timeout,
+	})
+
 	httpServer := http.NewServer(http.Config{
 		Log:             log,
 		JwtKey:          cfg.Server.JwtKey,
@@ -45,6 +57,8 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		LogQuerys:       cfg.Server.LogQuerys,
 		AuthHandlers:    authHandlers,
 		DevicesHandlers: devicesHandlers,
+		TagsHandler:     tagsHandlers,
+		ReportsHandler:  reportsHandlers,
 	})
 
 	go func() {

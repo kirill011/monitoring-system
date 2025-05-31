@@ -137,17 +137,17 @@ where id = :id and deleted_at is null;
 `
 
 func (r *devicesRepo) Update(ctx context.Context, opts repo.UpdateDeviceOpts) error {
-	var responsible []int
+	var responsible []int32
 	if len(opts.Responsible) != 0 {
 		responsible = opts.Responsible
 	}
 	_, err := r.tx.NamedExecContext(ctx, devicesRepoQueryUpdate,
 		struct {
-			ID          int       `db:"id"`
+			ID          int32     `db:"id"`
 			Name        *string   `db:"name"`
 			DeviceType  *string   `db:"device_type"`
 			Address     *string   `db:"address"`
-			Responsible []int     `db:"responsible"`
+			Responsible []int32   `db:"responsible"`
 			UpdatedAt   time.Time `db:"updated_at"`
 		}{
 			ID:          opts.ID,
@@ -169,7 +169,7 @@ delete from devices
 where id = :id and deleted_at is null;
 `
 
-func (r *devicesRepo) Delete(ctx context.Context, id int) error {
+func (r *devicesRepo) Delete(ctx context.Context, id int32) error {
 	_, err := r.tx.NamedExecContext(ctx, devicesRepoQueryDelete,
 		map[string]any{
 			"id": id,
@@ -186,7 +186,7 @@ select responsible from devices
 where id = :id and deleted_at is null;
 `
 
-func (r *devicesRepo) GetResponsible(ctx context.Context, deviceID int) ([]int, error) {
+func (r *devicesRepo) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
 	var responsibleIds models.SqlJsonbIntArray
 
 	rows, err := r.tx.NamedQuery(devicesRepoQueryGetResponsible,

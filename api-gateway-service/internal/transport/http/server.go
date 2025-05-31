@@ -10,6 +10,8 @@ import (
 	v1 "api-gateway-service/internal/transport/http/v1"
 	"api-gateway-service/internal/transport/natshandlers/auth"
 	"api-gateway-service/internal/transport/natshandlers/devices"
+	"api-gateway-service/internal/transport/natshandlers/reports"
+	"api-gateway-service/internal/transport/natshandlers/tags"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
@@ -23,6 +25,8 @@ type Server struct {
 	log             *zap.Logger
 	authHandlers    *auth.AuthHandlers
 	devicesHandlers *devices.DevicesHandler
+	tagsHandler     *tags.TagsHandler
+	reportsHandler  *reports.ReportsHandler
 }
 
 type Config struct {
@@ -33,6 +37,8 @@ type Config struct {
 	LogQuerys       bool
 	AuthHandlers    *auth.AuthHandlers
 	DevicesHandlers *devices.DevicesHandler
+	TagsHandler     *tags.TagsHandler
+	ReportsHandler  *reports.ReportsHandler
 }
 
 func NewServer(cfg Config) *Server {
@@ -42,6 +48,8 @@ func NewServer(cfg Config) *Server {
 		jwtKey:          cfg.JwtKey,
 		authHandlers:    cfg.AuthHandlers,
 		devicesHandlers: cfg.DevicesHandlers,
+		tagsHandler:     cfg.TagsHandler,
+		reportsHandler:  cfg.ReportsHandler,
 		app:             nil,
 	}
 
@@ -159,6 +167,8 @@ func (s *Server) setHandlers() {
 		JwtKey:          s.jwtKey,
 		AuthHandlers:    s.authHandlers,
 		DevicesHandlers: s.devicesHandlers,
+		TagsHandlers:    s.tagsHandler,
+		ReportsHandlers: s.reportsHandler,
 	})
 	{
 		apiV1 := rootRoute.Group("/v1")

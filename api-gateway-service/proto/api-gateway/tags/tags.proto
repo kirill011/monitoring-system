@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option go_package = ".;pbtags";
+
+package pbtags;
+
+import "google/protobuf/timestamp.proto";
+
+message Tag {
+    int32 ID = 1;        
+	string Name = 2;      
+	int32 DeviceID = 3;     
+	string Regexp = 4;  
+    string CompareType = 5;
+    string Value = 6;
+    int32 ArrayIndex = 7;
+    string Subject = 8;
+    string ServinityLevel = 9;
+	google.protobuf.Timestamp CreatedAt = 10;
+	google.protobuf.Timestamp UpdatedAt = 11;
+}
+
+message CreateReq{
+    Tag Tag = 1;
+}
+
+message CreateResp{
+    Tag Created = 1;
+    string Error = 2;
+}
+
+message ReadResp {
+    repeated Tag Tags = 1;
+    string Error = 2;
+}
+
+message UpdateReq {
+    Tag Tag = 1;
+}
+
+message UpdateResp {
+    string Error = 1;
+}
+
+message DeleteReq {
+    int32 ID = 1;
+}
+
+message DeleteResp {
+    string Error = 1;
+}

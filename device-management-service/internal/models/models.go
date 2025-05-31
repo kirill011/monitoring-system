@@ -8,16 +8,16 @@ import (
 )
 
 type Device struct {
-	ID          int              `db:"id"`
-	Name        *string          `db:"name"`
-	DeviceType  *string          `db:"device_type"`
-	Address     *string          `db:"address"`
+	ID          int32            `db:"id"`
+	Name        string           `db:"name"`
+	DeviceType  string           `db:"device_type"`
+	Address     string           `db:"address"`
 	Responsible SqlJsonbIntArray `db:"responsible"`
 	CreatedAt   *time.Time       `db:"created_at"`
 	UpdatedAt   *time.Time       `db:"updated_at"`
 }
 
-type SqlJsonbIntArray []int
+type SqlJsonbIntArray []int32
 
 func (arr SqlJsonbIntArray) Value() (driver.Value, error) {
 	res, err := json.Marshal(arr)

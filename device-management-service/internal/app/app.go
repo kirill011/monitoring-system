@@ -41,6 +41,14 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		log.Fatal("migration error", zap.Error(err))
 	}
 
+	postgresDB, err = postgres.NewPostgres(postgres.Config{
+		DataSource:        cfg.Postgres.DataSource,
+		ApplicationSchema: cfg.Postgres.ApplicationSchema,
+	})
+	if err != nil {
+		log.Fatal("init postgresDB error", zap.Error(err))
+	}
+
 	devicesRepo := pg.NewDevicesRepo(postgresDB, log)
 
 	devicesService := services.NewDevicesService(devicesRepo)

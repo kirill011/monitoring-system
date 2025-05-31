@@ -12,8 +12,8 @@ type Devices interface {
 	Create(ctx context.Context, params models.Device) (models.Device, error)
 	Read(ctx context.Context) (ReadResult, error)
 	Update(ctx context.Context, params UpdateDeviceParams) error
-	Delete(ctx context.Context, deviceID int) error
-	GetResponsible(ctx context.Context, deviceID int) ([]int, error)
+	Delete(ctx context.Context, deviceID int32) error
+	GetResponsible(ctx context.Context, deviceID int32) ([]int32, error)
 }
 
 type DeviceService struct {
@@ -76,11 +76,11 @@ func (s *DeviceService) Read(ctx context.Context) (ReadResult, error) {
 
 type (
 	UpdateDeviceParams struct {
-		ID          int
+		ID          int32
 		Name        *string
 		DeviceType  *string
 		Address     *string
-		Responsible []int
+		Responsible []int32
 	}
 )
 
@@ -110,7 +110,7 @@ func (s *DeviceService) Update(ctx context.Context, params UpdateDeviceParams) e
 	return nil
 }
 
-func (s *DeviceService) Delete(ctx context.Context, deviceID int) error {
+func (s *DeviceService) Delete(ctx context.Context, deviceID int32) error {
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return fmt.Errorf("s.repo.BeginTx: %w", err)
@@ -130,7 +130,7 @@ func (s *DeviceService) Delete(ctx context.Context, deviceID int) error {
 	return nil
 }
 
-func (s *DeviceService) GetResponsible(ctx context.Context, deviceID int) ([]int, error) {
+func (s *DeviceService) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("s.repo.BeginTx: %w", err)

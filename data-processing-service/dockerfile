@@ -1,0 +1,17 @@
+FROM golang:1.23.0-alpine
+
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash openssh
+
+WORKDIR /app
+
+RUN mkdir -p /app/monitoring-system/data-processing-service
+WORKDIR /app/monitoring-system/data-processing-service
+
+COPY . .
+
+RUN go mod download && go mod verify
+
+RUN go build -o /bin/data-processing-service /app/monitoring-system/data-processing-service/cmd/main.go
+
+CMD ["/bin/data-processing-service"]

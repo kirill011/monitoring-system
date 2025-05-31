@@ -41,6 +41,11 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		log.Fatal("migration error", zap.Error(err))
 	}
 
+	postgresDB, err = postgres.NewPostgres(postgres.Config{
+		DataSource:        cfg.Postgres.DataSource,
+		ApplicationSchema: cfg.Postgres.ApplicationSchema,
+	})
+
 	authRepo := pg.NewAuthRepo(postgresDB, log)
 
 	authService := services.NewAuthService(authRepo)

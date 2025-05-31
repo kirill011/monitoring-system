@@ -13,6 +13,6 @@ type Devices interface {
 	Create(opts models.Device) (models.Device, error)
 	Read(ctx context.Context) (ReadDevicesResult, error)
 	Update(ctx context.Context, opts UpdateDeviceOpts) error
-	Delete(ctx context.Context, id int) error
-	GetResponsible(ctx context.Context, deviceID int) ([]int, error)
+	Delete(ctx context.Context, id int32) error
+	GetResponsible(ctx context.Context, deviceID int32) ([]int32, error)
 }

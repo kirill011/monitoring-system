@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = ".;pbmessages";
+
+package pbmessages;
+
+message MessageSave {
+    int32 ID = 1;
+    int32 DeviceID = 2;
+    string Message = 3;
+    string MessageType = 4;
+    string Component = 5;
+}

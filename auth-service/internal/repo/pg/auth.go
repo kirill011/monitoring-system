@@ -141,7 +141,7 @@ where id = :id and deleted_at is null;
 func (r *authRepo) Update(ctx context.Context, opts repo.UpdateUsersOpts) error {
 	_, err := r.tx.NamedExecContext(ctx, usersRepoQueryUpdateUser,
 		struct {
-			ID        int       `db:"id"`
+			ID        int32     `db:"id"`
 			Name      *string   `db:"name"`
 			Email     *string   `db:"email"`
 			Password  *string   `db:"password"`
@@ -165,10 +165,10 @@ delete from users
 where id = :id and deleted_at is null;
 `
 
-func (r *authRepo) Delete(ctx context.Context, userID int) error {
+func (r *authRepo) Delete(ctx context.Context, userID int32) error {
 	_, err := r.tx.NamedExecContext(ctx, usersRepoQueryDeletePerson,
 		struct {
-			ID int `db:"id"`
+			ID int32 `db:"id"`
 		}{
 			ID: userID,
 		},

@@ -9,13 +9,13 @@ type CreateUserOpts struct {
 }
 
 type CreateUserResult struct {
-	ID    int
+	ID    int32
 	Name  string
 	Email string
 }
 
 type UpdateUsersOpts struct {
-	ID       int
+	ID       int32
 	Name     *string
 	Email    *string
 	Password *string

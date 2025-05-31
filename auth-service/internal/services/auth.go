@@ -14,7 +14,7 @@ type Auth interface {
 	Create(ctx context.Context, params CreateUserParams) (CreateUserResult, error)
 	Read(ctx context.Context) (ReadResult, error)
 	Update(ctx context.Context, params UpdateUsersParams) error
-	Delete(ctx context.Context, userID int) error
+	Delete(ctx context.Context, userID int32) error
 
 	Authorize(ctx context.Context, params AuthorizeParams) (int, error)
 	GetEmailsByIDs(ctx context.Context, userIDs []int32) ([]string, error)
@@ -38,13 +38,13 @@ type (
 	}
 
 	CreateUserResult struct {
-		ID    int
+		ID    int32
 		Name  string
 		Email string
 	}
 
 	UpdateUsersParams struct {
-		ID       int
+		ID       int32
 		Name     *string
 		Email    *string
 		Password *string
@@ -145,7 +145,7 @@ func (s *AuthService) Update(ctx context.Context, params UpdateUsersParams) erro
 	return nil
 }
 
-func (s *AuthService) Delete(ctx context.Context, userID int) error {
+func (s *AuthService) Delete(ctx context.Context, userID int32) error {
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return fmt.Errorf("s.repo.BeginTx: %w", err)

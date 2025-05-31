@@ -20,7 +20,7 @@ const (
 	localID = "localID"
 
 	getEmailSubject   = "users.get_email"
-	usersQueue        = "users"
+	authQueue         = "auth"
 	authCreateSubject = "users.create"
 	authReadSubject   = "users.read"
 	authUpdateSubject = "users.update"
@@ -29,32 +29,32 @@ const (
 )
 
 func (n *NatsListeners) listen() error {
-	_, err := n.natsConn.QueueSubscribe(getEmailSubject, usersQueue, n.getEmailHandler)
+	_, err := n.natsConn.QueueSubscribe(getEmailSubject, authQueue, n.getEmailHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+getEmailSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(authSubject, usersQueue, n.authHandler)
+	_, err = n.natsConn.QueueSubscribe(authSubject, authQueue, n.authHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+authSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(authCreateSubject, usersQueue, n.createHandler)
+	_, err = n.natsConn.QueueSubscribe(authCreateSubject, authQueue, n.createHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+authCreateSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(authReadSubject, usersQueue, n.readHandler)
+	_, err = n.natsConn.QueueSubscribe(authReadSubject, authQueue, n.readHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+authReadSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(authUpdateSubject, usersQueue, n.updateHandler)
+	_, err = n.natsConn.QueueSubscribe(authUpdateSubject, authQueue, n.updateHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+authUpdateSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(authDeleteSubject, usersQueue, n.deleteHandler)
+	_, err = n.natsConn.QueueSubscribe(authDeleteSubject, authQueue, n.deleteHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+authDeleteSubject+"): %w", err)
 	}
@@ -284,7 +284,7 @@ func (n *NatsListeners) updateHandler(msg *nats.Msg) {
 	n.log.Debug("updateHandler", zap.String("request", request.String()))
 
 	err = n.authService.Update(context.Background(), services.UpdateUsersParams{
-		ID:       int(request.User.GetID()),
+		ID:       request.User.GetID(),
 		Name:     &request.User.Name,
 		Email:    &request.User.Email,
 		Password: &request.User.Password,
@@ -323,7 +323,7 @@ func (n *NatsListeners) deleteHandler(msg *nats.Msg) {
 		)
 	}
 
-	err = n.authService.Delete(context.Background(), int(request.GetID()))
+	err = n.authService.Delete(context.Background(), request.GetID())
 	if err != nil {
 		n.log.Error("n.authService.Authorize", zap.Error(err))
 		n.sendError(msg.Reply, &pbapiusers.DeleteResp{Error: err.Error()})

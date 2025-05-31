@@ -75,7 +75,7 @@ services:
       auth-service:
        condition: service_started
       postgres-device-management:
-        condition: service_started
+        condition: service_healthy
       nats: 
         condition: service_started
 
@@ -88,7 +88,7 @@ services:
       POSTGRES_PASSWORD: 1789
       POSTGRES_DB: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -p 5434"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5435"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -121,6 +121,65 @@ services:
       nats:
         condition: service_started
 
+  data-processing-service:
+    build:
+      context: ./data-processing-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13694:13694
+    volumes:
+      - .:/app/data-processing-service
+    networks:
+      - nats
+    depends_on:
+      notification-service:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  postgres-data-processing:
+    image: postgres
+    command: 
+    - -p 5436
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1789
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5436"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5436:5436
+    volumes:
+      - postgres-data-processing-db:/var/lib/postgresql/data
+    networks:
+      - nats
+
+  data-ingestion-service:
+    build:
+      context: ./data-ingestion-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13695:13695
+    expose:
+      - 13695
+    volumes:
+      - .:/app/data-ingestion-service
+    networks:
+      - nats
+    depends_on:
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+      data-processing-service:
+        condition: service_started
 
   nats:
     image: nats
@@ -132,6 +191,7 @@ services:
 volumes:
   postgres-auth-db:
   postgres-device-management-db:
+  postgres-data-processing-db:
 
 
 networks:

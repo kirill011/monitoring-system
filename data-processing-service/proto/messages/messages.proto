@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+option go_package = ".;pbmessages";
+
+package pbmessages;
+
+import "google/protobuf/timestamp.proto";
+
+
+message MessageSave {
+    int32 ID = 1;
+    int32 DeviceID = 2;
+    string Message = 3;
+    string MessageType = 4;
+    string Component = 5;
+}
+
+message ReportGetAllByPeriodReq{
+    google.protobuf.Timestamp StartTime = 1;
+    google.protobuf.Timestamp EndTime = 2;
+}
+
+message ReportGetAllByPeriod{
+    int32  DeviceID = 1;
+	string Name = 2;
+	string DeviceType = 3;
+	string Address = 4;
+	repeated int32 Responsible = 5;
+	google.protobuf.Timestamp GotAt = 6;
+	string Message = 7;
+	string MessageType = 8;
+    string ServinityLevel = 9;
+    string Component = 10;
+}
+
+message ReportGetAllByPeriodResp{
+    repeated ReportGetAllByPeriod Report = 1;
+    string Error = 2;
+}
+
+message ReportGetAllByDeviceIdReq{
+    int32 DeviceId = 1;
+}
+
+message ReportGetAllByDeviceId{
+    int32  DeviceID = 1;
+	string Name = 2;
+	string DeviceType = 3;
+	string Address = 4;
+	repeated int32 Responsible = 5;
+	google.protobuf.Timestamp GotAt = 6;
+	string Message = 7;
+	string MessageType = 8;
+    string ServinityLevel = 9;
+    string Component = 10;
+}
+
+message ReportGetAllByDeviceIdResp{
+    repeated ReportGetAllByDeviceId Report = 1;
+    string Error = 2;
+}
+
+message ReportGetCountByMessageTypeReq{
+    string MessageType = 1;
+}
+
+message ReportGetCountByMessageType{
+    int32 DeviceID = 1;
+	string Name = 2;
+	string DeviceType = 3; 
+	string Address = 4; 
+	repeated int32 Responsible = 5;
+	int32 Count = 6;
+}
+
+message ReportGetCountByMessageTypeResp{
+    repeated ReportGetCountByMessageType Report = 1;
+    string Error = 2;
+}
+
+message MonthReportRow {
+  int32 DeviceId = 1;
+  string MessageType = 2;
+  int32 ActiveDays = 3;
+  int64 TotalMessages = 4;
+  double AvgDailyMessages = 5;
+  int64 MaxDailyMessages = 6;
+  double MedianDailyMessages = 7;
+  int64 TotalCritical = 8;
+  int64 MaxDailyCritical = 9;
+  int32 MaxDailyComponents = 10;
+  string MostActiveComponent = 11;
+  google.protobuf.Timestamp FirstCriticalTime = 12;
+  google.protobuf.Timestamp LastCriticalTime = 13;
+  double AvgCriticalInterval = 14;
+  double CriticalPercentage = 15;
+  int32 OverallVolumeRank = 16;
+}
+
+message MonthReport{
+    repeated MonthReportRow MonthReport = 1;
+    string Error = 2;
+
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = ".;pbnotification";
+
+package pbnotification;
+
+message SendNotifyReq {
+    int32 DeviceID = 1;
+    string Text = 2;
+    string Subject = 3;
+}

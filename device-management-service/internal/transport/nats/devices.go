@@ -23,33 +23,33 @@ const (
 	updateDevicesSubject = "devices.update"
 	deleteDevicesSubject = "devices.delete"
 
-	devicesQueue = "devices"
+	deviceManagementQueue = "device-management"
 
 	devicesUpdatedSubject = "devices.updated"
 )
 
 func (n *NatsListeners) listen() error {
-	_, err := n.natsConn.QueueSubscribe(getResponsibleSubject, devicesQueue, n.gerResponsibleHandler)
+	_, err := n.natsConn.QueueSubscribe(getResponsibleSubject, deviceManagementQueue, n.gerResponsibleHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+getResponsibleSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(createDevicesSubject, devicesQueue, n.createHandler)
+	_, err = n.natsConn.QueueSubscribe(createDevicesSubject, deviceManagementQueue, n.createHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+createDevicesSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(readDevicesSubject, devicesQueue, n.readHandler)
+	_, err = n.natsConn.QueueSubscribe(readDevicesSubject, deviceManagementQueue, n.readHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+readDevicesSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(updateDevicesSubject, devicesQueue, n.updateHandler)
+	_, err = n.natsConn.QueueSubscribe(updateDevicesSubject, deviceManagementQueue, n.updateHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+updateDevicesSubject+"): %w", err)
 	}
 
-	_, err = n.natsConn.QueueSubscribe(deleteDevicesSubject, devicesQueue, n.deleteHandler)
+	_, err = n.natsConn.QueueSubscribe(deleteDevicesSubject, deviceManagementQueue, n.deleteHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+deleteDevicesSubject+"): %w", err)
 	}
@@ -77,7 +77,7 @@ func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
 		return
 	}
 
-	responsibles, err := n.devicesService.GetResponsible(context.Background(), int(getResposibleReq.GetDeviceID()))
+	responsibles, err := n.devicesService.GetResponsible(context.Background(), getResposibleReq.GetDeviceID())
 	if err != nil {
 		n.log.Error("devicesService.GetResponsible",
 			zap.Error(err),
@@ -91,7 +91,7 @@ func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
 	}
 
 	getResposibleResp := pbdevices.GetResponsibleResp{
-		ResponsibleID: convertIntArrayToInt32(responsibles),
+		ResponsibleID: responsibles,
 	}
 	getResposibleRespBytes, err := proto.Marshal(&getResposibleResp)
 	if err != nil {
@@ -102,14 +102,6 @@ func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
 	if err := n.natsConn.Publish(msg.Reply, getResposibleRespBytes); err != nil {
 		n.log.Error("n.natsConn.Publish", zap.Error(err))
 	}
-}
-
-func convertIntArrayToInt32(value []int) []int32 {
-	var result []int32
-	for _, v := range value {
-		result = append(result, int32(v))
-	}
-	return result
 }
 
 func (n *NatsListeners) createHandler(msg *nats.Msg) {
@@ -126,10 +118,10 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 
 	created, err := n.devicesService.Create(context.Background(),
 		models.Device{
-			Name:        &request.Device.Name,
-			DeviceType:  &request.Device.DeviceType,
-			Address:     &request.Device.Address,
-			Responsible: convertInt32ArrayToInt(request.Device.Responsible),
+			Name:        request.Device.Name,
+			DeviceType:  request.Device.DeviceType,
+			Address:     request.Device.Address,
+			Responsible: request.Device.Responsible,
 		})
 	if err != nil {
 		n.log.Error("n.devicesService.Create", zap.Error(err))
@@ -149,10 +141,10 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 	resp := pbapidevices.CreateResp{
 		Created: &pbapidevices.Device{
 			ID:          int32(created.ID),
-			Name:        *created.Name,
-			DeviceType:  *created.DeviceType,
-			Address:     *created.Address,
-			Responsible: convertIntArrayToInt32(created.Responsible),
+			Name:        created.Name,
+			DeviceType:  created.DeviceType,
+			Address:     created.Address,
+			Responsible: created.Responsible,
 			CreatedAt:   createdAt,
 			UpdatedAt:   updatedAt,
 		},
@@ -173,17 +165,6 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 	if err := n.PublishUpdateEvent(); err != nil {
 		n.log.Error("n.PublishUpdateEvent", zap.Error(err))
 	}
-}
-
-func convertInt32ArrayToInt(value []int32) []int {
-	if len(value) == 0 {
-		return nil
-	}
-	var result []int
-	for _, v := range value {
-		result = append(result, int(v))
-	}
-	return result
 }
 
 func (n *NatsListeners) readHandler(msg *nats.Msg) {
@@ -240,11 +221,11 @@ func convertDevicesToProtoDevices(devices []models.Device) []*pbapidevices.Devic
 		}
 
 		result = append(result, &pbapidevices.Device{
-			ID:          int32(device.ID),
-			Name:        *device.Name,
-			DeviceType:  *device.DeviceType,
-			Address:     *device.Address,
-			Responsible: convertIntArrayToInt32(device.Responsible),
+			ID:          device.ID,
+			Name:        device.Name,
+			DeviceType:  device.DeviceType,
+			Address:     device.Address,
+			Responsible: device.Responsible,
 			CreatedAt:   createdAt,
 			UpdatedAt:   updatedAt,
 		})
@@ -279,11 +260,11 @@ func (n *NatsListeners) updateHandler(msg *nats.Msg) {
 
 	err = n.devicesService.Update(context.Background(),
 		services.UpdateDeviceParams{
-			ID:          int(request.Device.GetID()),
+			ID:          request.Device.GetID(),
 			Name:        name,
 			DeviceType:  deviceType,
 			Address:     address,
-			Responsible: convertInt32ArrayToInt(request.Device.Responsible),
+			Responsible: request.Device.Responsible,
 		})
 	if err != nil {
 		n.log.Error("n.devicesService.Update", zap.Error(err))
@@ -322,7 +303,7 @@ func (n *NatsListeners) deleteHandler(msg *nats.Msg) {
 		)
 	}
 
-	err = n.devicesService.Delete(context.Background(), int(request.GetID()))
+	err = n.devicesService.Delete(context.Background(), request.GetID())
 	if err != nil {
 		n.log.Error("n.devicesService.Delete", zap.Error(err))
 		n.sendError(msg.Reply, &pbapidevices.DeleteResp{Error: err.Error()})
