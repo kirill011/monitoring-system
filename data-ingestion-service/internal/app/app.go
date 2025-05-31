@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"data-ingestion-service/config"
+	"data-ingestion-service/internal/services"
+	"data-ingestion-service/internal/transport/http"
 	natslisteners "data-ingestion-service/internal/transport/natslistener"
 	"data-ingestion-service/pkg/closer"
 	"data-ingestion-service/pkg/logger"
@@ -25,10 +27,13 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		log.Fatal(fmt.Errorf("nats.NewNats: %w", err).Error())
 	}
 
+	devicesService := services.NewDeviceService(services.Config{})
+
 	listeners := natslisteners.NewListener(natslisteners.Config{
-		NatsConn: nats.NatsConn,
-		Log:      log,
-		Timeout:  cfg.Nats.Timeout,
+		NatsConn:       nats.NatsConn,
+		Log:            log,
+		Timeout:        cfg.Nats.Timeout,
+		DevicesService: devicesService,
 	})
 
 	go func() {
@@ -40,6 +45,24 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	log.Info("Running NATs listener")
 
+	httpServer := http.NewServer(http.Config{
+		Log:               log,
+		Addr:              cfg.Server.Addr,
+		LogQuerys:         cfg.Server.LogQuerys,
+		MessageHandler:    listeners,
+		DevicesService:    devicesService,
+		DeviceCheckPeriod: cfg.Server.DeviceCheckPeriod,
+	})
+
+	go func() {
+		if err = httpServer.Run(); err != nil {
+			log.Error(fmt.Errorf("error occurred while running http server: %w", err).Error())
+			stop()
+		}
+	}()
+
+	log.Info("Running HTTP server")
+
 	// Shutdown
 	<-ctx.Done()
 
@@ -48,6 +71,7 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 	closer := closer.Closer{}
 
 	closer.Add(nats.Close)
+	closer.Add(httpServer.Stop)
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.App.ShutdownTimeout)
 	defer cancel()

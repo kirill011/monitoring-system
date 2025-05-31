@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	sendNotifySubject  = "notify.send"
 	dataIngestionQueue = "data-ingestion"
 
 	devicesUpdatedSubject = "devices.updated"
@@ -23,9 +22,9 @@ const (
 )
 
 func (n *NatsListeners) listen() error {
-	_, err := n.natsConn.QueueSubscribe(sendNotifySubject, dataIngestionQueue, n.devicesUpdatedHandler)
+	_, err := n.natsConn.QueueSubscribe(devicesUpdatedSubject, dataIngestionQueue, n.devicesUpdatedHandler)
 	if err != nil {
-		return fmt.Errorf("n.natsConn.Subscribe("+sendNotifySubject+"): %w", err)
+		return fmt.Errorf("n.natsConn.Subscribe("+devicesUpdatedSubject+"): %w", err)
 	}
 
 	err = n.publishDevicesRead()

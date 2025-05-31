@@ -222,7 +222,7 @@ func (ms *MessagesService) handleMessage(message models.Message) (handleMessageR
 			if tag.CompareType == ">" || tag.CompareType == "<" {
 				ms.handleReversedTag(tag)
 			}
-			message.ServinityLevel = tag.ServinityLevel
+			message.SeverityLevel = tag.SeverityLevel
 		}
 		return handleMessageResponse{
 			Text:       message.Message,
@@ -244,7 +244,7 @@ func (ms *MessagesService) handleReversedTag(tag models.Tag) {
 	} else {
 		reversedTag := tag
 		reversedTag.Subject = "OK"
-		reversedTag.ServinityLevel = "info"
+		reversedTag.SeverityLevel = "info"
 		switch tag.CompareType {
 		case ">":
 			reversedTag.CompareType = "<"

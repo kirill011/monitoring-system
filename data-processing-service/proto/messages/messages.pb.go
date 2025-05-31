@@ -151,19 +151,19 @@ func (x *ReportGetAllByPeriodReq) GetEndTime() *timestamppb.Timestamp {
 }
 
 type ReportGetAllByPeriod struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	DeviceID       int32                  `protobuf:"varint,1,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
-	Name           string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	DeviceType     string                 `protobuf:"bytes,3,opt,name=DeviceType,proto3" json:"DeviceType,omitempty"`
-	Address        string                 `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address,omitempty"`
-	Responsible    []int32                `protobuf:"varint,5,rep,packed,name=Responsible,proto3" json:"Responsible,omitempty"`
-	GotAt          *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=GotAt,proto3" json:"GotAt,omitempty"`
-	Message        string                 `protobuf:"bytes,7,opt,name=Message,proto3" json:"Message,omitempty"`
-	MessageType    string                 `protobuf:"bytes,8,opt,name=MessageType,proto3" json:"MessageType,omitempty"`
-	ServinityLevel string                 `protobuf:"bytes,9,opt,name=ServinityLevel,proto3" json:"ServinityLevel,omitempty"`
-	Component      string                 `protobuf:"bytes,10,opt,name=Component,proto3" json:"Component,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeviceID      int32                  `protobuf:"varint,1,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	DeviceType    string                 `protobuf:"bytes,3,opt,name=DeviceType,proto3" json:"DeviceType,omitempty"`
+	Address       string                 `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address,omitempty"`
+	Responsible   []int32                `protobuf:"varint,5,rep,packed,name=Responsible,proto3" json:"Responsible,omitempty"`
+	GotAt         *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=GotAt,proto3" json:"GotAt,omitempty"`
+	Message       string                 `protobuf:"bytes,7,opt,name=Message,proto3" json:"Message,omitempty"`
+	MessageType   string                 `protobuf:"bytes,8,opt,name=MessageType,proto3" json:"MessageType,omitempty"`
+	SeverityLevel string                 `protobuf:"bytes,9,opt,name=SeverityLevel,proto3" json:"SeverityLevel,omitempty"`
+	Component     string                 `protobuf:"bytes,10,opt,name=Component,proto3" json:"Component,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ReportGetAllByPeriod) Reset() {
@@ -252,9 +252,9 @@ func (x *ReportGetAllByPeriod) GetMessageType() string {
 	return ""
 }
 
-func (x *ReportGetAllByPeriod) GetServinityLevel() string {
+func (x *ReportGetAllByPeriod) GetSeverityLevel() string {
 	if x != nil {
-		return x.ServinityLevel
+		return x.SeverityLevel
 	}
 	return ""
 }
@@ -363,19 +363,19 @@ func (x *ReportGetAllByDeviceIdReq) GetDeviceId() int32 {
 }
 
 type ReportGetAllByDeviceId struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	DeviceID       int32                  `protobuf:"varint,1,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
-	Name           string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	DeviceType     string                 `protobuf:"bytes,3,opt,name=DeviceType,proto3" json:"DeviceType,omitempty"`
-	Address        string                 `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address,omitempty"`
-	Responsible    []int32                `protobuf:"varint,5,rep,packed,name=Responsible,proto3" json:"Responsible,omitempty"`
-	GotAt          *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=GotAt,proto3" json:"GotAt,omitempty"`
-	Message        string                 `protobuf:"bytes,7,opt,name=Message,proto3" json:"Message,omitempty"`
-	MessageType    string                 `protobuf:"bytes,8,opt,name=MessageType,proto3" json:"MessageType,omitempty"`
-	ServinityLevel string                 `protobuf:"bytes,9,opt,name=ServinityLevel,proto3" json:"ServinityLevel,omitempty"`
-	Component      string                 `protobuf:"bytes,10,opt,name=Component,proto3" json:"Component,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DeviceID      int32                  `protobuf:"varint,1,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	DeviceType    string                 `protobuf:"bytes,3,opt,name=DeviceType,proto3" json:"DeviceType,omitempty"`
+	Address       string                 `protobuf:"bytes,4,opt,name=Address,proto3" json:"Address,omitempty"`
+	Responsible   []int32                `protobuf:"varint,5,rep,packed,name=Responsible,proto3" json:"Responsible,omitempty"`
+	GotAt         *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=GotAt,proto3" json:"GotAt,omitempty"`
+	Message       string                 `protobuf:"bytes,7,opt,name=Message,proto3" json:"Message,omitempty"`
+	MessageType   string                 `protobuf:"bytes,8,opt,name=MessageType,proto3" json:"MessageType,omitempty"`
+	SeverityLevel string                 `protobuf:"bytes,9,opt,name=SeverityLevel,proto3" json:"SeverityLevel,omitempty"`
+	Component     string                 `protobuf:"bytes,10,opt,name=Component,proto3" json:"Component,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ReportGetAllByDeviceId) Reset() {
@@ -464,9 +464,9 @@ func (x *ReportGetAllByDeviceId) GetMessageType() string {
 	return ""
 }
 
-func (x *ReportGetAllByDeviceId) GetServinityLevel() string {
+func (x *ReportGetAllByDeviceId) GetSeverityLevel() string {
 	if x != nil {
-		return x.ServinityLevel
+		return x.SeverityLevel
 	}
 	return ""
 }
@@ -940,7 +940,7 @@ const file_messages_proto_rawDesc = "" +
 	"\tComponent\x18\x05 \x01(\tR\tComponent\"\x89\x01\n" +
 	"\x17ReportGetAllByPeriodReq\x128\n" +
 	"\tStartTime\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tStartTime\x124\n" +
-	"\aEndTime\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aEndTime\"\xd6\x02\n" +
+	"\aEndTime\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\aEndTime\"\xd4\x02\n" +
 	"\x14ReportGetAllByPeriod\x12\x1a\n" +
 	"\bDeviceID\x18\x01 \x01(\x05R\bDeviceID\x12\x12\n" +
 	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1e\n" +
@@ -951,15 +951,15 @@ const file_messages_proto_rawDesc = "" +
 	"\vResponsible\x18\x05 \x03(\x05R\vResponsible\x120\n" +
 	"\x05GotAt\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x05GotAt\x12\x18\n" +
 	"\aMessage\x18\a \x01(\tR\aMessage\x12 \n" +
-	"\vMessageType\x18\b \x01(\tR\vMessageType\x12&\n" +
-	"\x0eServinityLevel\x18\t \x01(\tR\x0eServinityLevel\x12\x1c\n" +
+	"\vMessageType\x18\b \x01(\tR\vMessageType\x12$\n" +
+	"\rSeverityLevel\x18\t \x01(\tR\rSeverityLevel\x12\x1c\n" +
 	"\tComponent\x18\n" +
 	" \x01(\tR\tComponent\"j\n" +
 	"\x18ReportGetAllByPeriodResp\x128\n" +
 	"\x06Report\x18\x01 \x03(\v2 .pbmessages.ReportGetAllByPeriodR\x06Report\x12\x14\n" +
 	"\x05Error\x18\x02 \x01(\tR\x05Error\"7\n" +
 	"\x19ReportGetAllByDeviceIdReq\x12\x1a\n" +
-	"\bDeviceId\x18\x01 \x01(\x05R\bDeviceId\"\xd8\x02\n" +
+	"\bDeviceId\x18\x01 \x01(\x05R\bDeviceId\"\xd6\x02\n" +
 	"\x16ReportGetAllByDeviceId\x12\x1a\n" +
 	"\bDeviceID\x18\x01 \x01(\x05R\bDeviceID\x12\x12\n" +
 	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1e\n" +
@@ -970,8 +970,8 @@ const file_messages_proto_rawDesc = "" +
 	"\vResponsible\x18\x05 \x03(\x05R\vResponsible\x120\n" +
 	"\x05GotAt\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x05GotAt\x12\x18\n" +
 	"\aMessage\x18\a \x01(\tR\aMessage\x12 \n" +
-	"\vMessageType\x18\b \x01(\tR\vMessageType\x12&\n" +
-	"\x0eServinityLevel\x18\t \x01(\tR\x0eServinityLevel\x12\x1c\n" +
+	"\vMessageType\x18\b \x01(\tR\vMessageType\x12$\n" +
+	"\rSeverityLevel\x18\t \x01(\tR\rSeverityLevel\x12\x1c\n" +
 	"\tComponent\x18\n" +
 	" \x01(\tR\tComponent\"n\n" +
 	"\x1aReportGetAllByDeviceIdResp\x12:\n" +

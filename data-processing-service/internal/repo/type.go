@@ -6,15 +6,15 @@ import (
 )
 
 type UpdateTagsOpts struct {
-	ID             int32
-	Name           *string
-	DeviceId       *int32
-	Regexp         *string
-	CompareType    *string
-	Value          *string
-	ArrayIndex     *int32
-	Subject        *string
-	ServinityLevel *string
+	ID            int32
+	Name          *string
+	DeviceId      *int32
+	Regexp        *string
+	CompareType   *string
+	Value         *string
+	ArrayIndex    *int32
+	Subject       *string
+	SeverityLevel *string
 }
 
 type ReadTagsResult struct {

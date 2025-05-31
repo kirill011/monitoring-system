@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"data-ingestion-service/internal/services"
 	v1 "data-ingestion-service/internal/transport/http/v1"
@@ -19,7 +18,6 @@ import (
 type Server struct {
 	app            *fiber.App
 	addr           string
-	jwtKey         string
 	log            *zap.Logger
 	messageHandler *natslistener.NatsListeners
 	devicesService services.DeviceService
@@ -29,8 +27,6 @@ type Server struct {
 
 type Config struct {
 	Log            *zap.Logger
-	JwtKey         string
-	TokenLifeTime  time.Duration
 	Addr           string
 	LogQuerys      bool
 	MessageHandler *natslistener.NatsListeners
@@ -43,7 +39,6 @@ func NewServer(cfg Config) *Server {
 	server := &Server{
 		log:               cfg.Log,
 		addr:              cfg.Addr,
-		jwtKey:            cfg.JwtKey,
 		messageHandler:    cfg.MessageHandler,
 		devicesService:    cfg.DevicesService,
 		deviceCheckPeriod: cfg.DeviceCheckPeriod,

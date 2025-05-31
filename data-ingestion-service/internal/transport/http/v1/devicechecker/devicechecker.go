@@ -70,4 +70,6 @@ func (dch *devicechecekrHandler) Start() {
 	if err != nil {
 		dch.log.Error("error adding device checker to cron", zap.Error(err))
 	}
+
+	dch.cron.Start()
 }

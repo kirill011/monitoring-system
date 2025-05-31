@@ -87,14 +87,14 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 
 	created, err := n.tagsService.Create(context.Background(),
 		models.Tag{
-			Name:           request.Tag.Name,
-			DeviceId:       request.Tag.DeviceID,
-			Regexp:         request.Tag.Regexp,
-			CompareType:    request.Tag.CompareType,
-			Value:          request.Tag.Value,
-			ArrayIndex:     request.Tag.ArrayIndex,
-			Subject:        request.Tag.Subject,
-			ServinityLevel: request.Tag.ServinityLevel,
+			Name:          request.Tag.Name,
+			DeviceId:      request.Tag.DeviceID,
+			Regexp:        request.Tag.Regexp,
+			CompareType:   request.Tag.CompareType,
+			Value:         request.Tag.Value,
+			ArrayIndex:    request.Tag.ArrayIndex,
+			Subject:       request.Tag.Subject,
+			SeverityLevel: request.Tag.SeverityLevel,
 		})
 	if err != nil {
 		n.log.Error("n.tagsService.Create", zap.Error(err))
@@ -113,17 +113,17 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 
 	resp := pbapidevices.CreateResp{
 		Created: &pbapidevices.Tag{
-			ID:             created.ID,
-			Name:           created.Name,
-			DeviceID:       created.DeviceId,
-			Regexp:         created.Regexp,
-			CompareType:    created.CompareType,
-			Value:          created.Value,
-			ArrayIndex:     created.ArrayIndex,
-			Subject:        created.Subject,
-			ServinityLevel: created.ServinityLevel,
-			CreatedAt:      createdAt,
-			UpdatedAt:      updatedAt,
+			ID:            created.ID,
+			Name:          created.Name,
+			DeviceID:      created.DeviceId,
+			Regexp:        created.Regexp,
+			CompareType:   created.CompareType,
+			Value:         created.Value,
+			ArrayIndex:    created.ArrayIndex,
+			Subject:       created.Subject,
+			SeverityLevel: created.SeverityLevel,
+			CreatedAt:     createdAt,
+			UpdatedAt:     updatedAt,
 		},
 	}
 
@@ -194,17 +194,17 @@ func convertTagsToProtoTags(devices []models.Tag) []*pbapidevices.Tag {
 		}
 
 		result = append(result, &pbapidevices.Tag{
-			ID:             device.ID,
-			Name:           device.Name,
-			DeviceID:       device.DeviceId,
-			Regexp:         device.Regexp,
-			CompareType:    device.CompareType,
-			Value:          device.Value,
-			ArrayIndex:     device.ArrayIndex,
-			Subject:        device.Subject,
-			ServinityLevel: device.ServinityLevel,
-			CreatedAt:      createdAt,
-			UpdatedAt:      updatedAt,
+			ID:            device.ID,
+			Name:          device.Name,
+			DeviceID:      device.DeviceId,
+			Regexp:        device.Regexp,
+			CompareType:   device.CompareType,
+			Value:         device.Value,
+			ArrayIndex:    device.ArrayIndex,
+			Subject:       device.Subject,
+			SeverityLevel: device.SeverityLevel,
+			CreatedAt:     createdAt,
+			UpdatedAt:     updatedAt,
 		})
 	}
 	return result
@@ -252,22 +252,22 @@ func (n *NatsListeners) updateHandler(msg *nats.Msg) {
 		subject = &request.Tag.Subject
 	}
 
-	var servinityLevel *string
-	if request.Tag.GetServinityLevel() != "" {
-		servinityLevel = &request.Tag.ServinityLevel
+	var SeverityLevel *string
+	if request.Tag.GetSeverityLevel() != "" {
+		SeverityLevel = &request.Tag.SeverityLevel
 	}
 
 	err = n.tagsService.Update(context.Background(),
 		services.UpdateParams{
-			ID:             request.Tag.GetID(),
-			Name:           name,
-			DeviceId:       deviceId,
-			Regexp:         regexp,
-			CompareType:    compareType,
-			Value:          value,
-			ArrayIndex:     arrayIndex,
-			Subject:        subject,
-			ServinityLevel: servinityLevel,
+			ID:            request.Tag.GetID(),
+			Name:          name,
+			DeviceId:      deviceId,
+			Regexp:        regexp,
+			CompareType:   compareType,
+			Value:         value,
+			ArrayIndex:    arrayIndex,
+			Subject:       subject,
+			SeverityLevel: SeverityLevel,
 		})
 	if err != nil {
 		n.log.Error("n.tagsService.Update", zap.Error(err))

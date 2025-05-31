@@ -45,14 +45,14 @@ func (h *tagsHandler) InitTagsRoutes(api fiber.Router) {
 
 type (
 	createReq struct {
-		Name           string `form:"name"         		json:"name"         	validate:"required"       				xml:"name"`
-		DeviceID       int32  `form:"device_id"    		json:"device_id"    	validate:"required"       				xml:"device_id"`
-		Regexp         string `form:"regexp"       		json:"regexp"       	validate:"required"          			xml:"regexp"`
-		CompareType    string `form:"compare_type" 		json:"compare_type" 	validate:"required,oneof='<' '>' '='"   xml:"compare_type"`
-		Value          string `form:"value"        		json:"value"        	validate:"required"       				xml:"value"`
-		ArrayIndex     int32  `form:"array_index"  		json:"array_index"  	validate:"required"       				xml:"array_index"`
-		Subject        string `form:"subject"      		json:"subject"      	validate:"required"	                    xml:"subject"`
-		ServinityLevel string `form:"servinity_level" 	json:"servinity_level" 	validate:"omitempty"					xml:"servinity_level"`
+		Name          string `form:"name"         		json:"name"         	validate:"required"       				xml:"name"`
+		DeviceID      int32  `form:"device_id"    		json:"device_id"    	validate:"required"       				xml:"device_id"`
+		Regexp        string `form:"regexp"       		json:"regexp"       	validate:"required"          			xml:"regexp"`
+		CompareType   string `form:"compare_type" 		json:"compare_type" 	validate:"required,oneof='<' '>' '='"   xml:"compare_type"`
+		Value         string `form:"value"        		json:"value"        	validate:"required"       				xml:"value"`
+		ArrayIndex    int32  `form:"array_index"  		json:"array_index"  	validate:"required"       				xml:"array_index"`
+		Subject       string `form:"subject"      		json:"subject"      	validate:"required"	                    xml:"subject"`
+		SeverityLevel string `form:"severity_level" 	json:"severity_level" 	validate:"omitempty"					xml:"severity_level"`
 	}
 
 	createResp struct {
@@ -77,14 +77,14 @@ func (h *tagsHandler) create(ctx fiber.Ctx) error {
 	res, err := h.natsHandlers.PublishCreate(
 		pbtags.CreateReq{
 			Tag: &pbtags.Tag{
-				Name:           body.Name,
-				DeviceID:       body.DeviceID,
-				Regexp:         body.Regexp,
-				CompareType:    body.CompareType,
-				Value:          body.Value,
-				ArrayIndex:     body.ArrayIndex,
-				Subject:        body.Subject,
-				ServinityLevel: body.ServinityLevel,
+				Name:          body.Name,
+				DeviceID:      body.DeviceID,
+				Regexp:        body.Regexp,
+				CompareType:   body.CompareType,
+				Value:         body.Value,
+				ArrayIndex:    body.ArrayIndex,
+				Subject:       body.Subject,
+				SeverityLevel: body.SeverityLevel,
 			},
 		},
 	)
@@ -164,15 +164,15 @@ func (h *tagsHandler) read(ctx fiber.Ctx) error {
 
 type (
 	updateReq struct {
-		ID             int32  `form:"id"           		json:"id"           	validate:"required"        						xml:"id"`
-		Name           string `form:"name"         		json:"name"         	validate:"omitempty"       						xml:"name"`
-		DeviceID       int32  `form:"device_id"    		json:"device_id"    	validate:"omitempty"       						xml:"device_id"`
-		Regexp         string `form:"regexp"       		json:"regexp"       	validate:"omitempty"       						xml:"regexp"`
-		CompareType    string `form:"compare_type" 		json:"compare_type" 	validate:"omitempty,oneof='<' '>' '='"       	xml:"compare_type"`
-		Value          string `form:"value"        		json:"value"        	validate:"omitempty"       						xml:"value"`
-		ArrayIndex     int32  `form:"array_index"  		json:"array_index"  	validate:"omitempty"       						xml:"array_index"`
-		Subject        string `form:"subject"      		json:"subject"      	validate:"omitempty"							xml:"subject"`
-		ServinityLevel string `form:"servinity_level" 	json:"servinity_level" 	validate:"omitempty"							xml:"servinity_level"`
+		ID            int32  `form:"id"           		json:"id"           	validate:"required"        						xml:"id"`
+		Name          string `form:"name"         		json:"name"         	validate:"omitempty"       						xml:"name"`
+		DeviceID      int32  `form:"device_id"    		json:"device_id"    	validate:"omitempty"       						xml:"device_id"`
+		Regexp        string `form:"regexp"       		json:"regexp"       	validate:"omitempty"       						xml:"regexp"`
+		CompareType   string `form:"compare_type" 		json:"compare_type" 	validate:"omitempty,oneof='<' '>' '='"       	xml:"compare_type"`
+		Value         string `form:"value"        		json:"value"        	validate:"omitempty"       						xml:"value"`
+		ArrayIndex    int32  `form:"array_index"  		json:"array_index"  	validate:"omitempty"       						xml:"array_index"`
+		Subject       string `form:"subject"      		json:"subject"      	validate:"omitempty"							xml:"subject"`
+		SeverityLevel string `form:"severity_level" 	json:"severity_level" 	validate:"omitempty"							xml:"severity_level"`
 	}
 
 	updateResp struct {
@@ -206,27 +206,27 @@ func (h *tagsHandler) update(ctx fiber.Ctx) error {
 
 	if body.Name == "" && body.DeviceID == 0 &&
 		body.Regexp == "" && body.CompareType == "" && body.Value == "" &&
-		body.ArrayIndex == 0 && body.Subject == "" && body.ServinityLevel == "" {
+		body.ArrayIndex == 0 && body.Subject == "" && body.SeverityLevel == "" {
 		return fiber.NewError(
 			fiber.StatusBadRequest,
 			errors.New(`body.Name == "" && body.DeviceID == 0 && body.Regexp == "" && 
 			body.CompareType == "" && body.Value == "" && body.ArrayIndex == 0 && 
-			body.Subject == "" && body.ServinityLevel == ""`).Error(),
+			body.Subject == "" && body.SeverityLevel == ""`).Error(),
 		)
 	}
 
 	err := h.natsHandlers.PublishUpdate(
 		pbtags.UpdateReq{
 			Tag: &pbtags.Tag{
-				ID:             body.ID,
-				Name:           body.Name,
-				DeviceID:       body.DeviceID,
-				Regexp:         body.Regexp,
-				CompareType:    body.CompareType,
-				Value:          body.Value,
-				ArrayIndex:     body.ArrayIndex,
-				Subject:        body.Subject,
-				ServinityLevel: body.ServinityLevel,
+				ID:            body.ID,
+				Name:          body.Name,
+				DeviceID:      body.DeviceID,
+				Regexp:        body.Regexp,
+				CompareType:   body.CompareType,
+				Value:         body.Value,
+				ArrayIndex:    body.ArrayIndex,
+				Subject:       body.Subject,
+				SeverityLevel: body.SeverityLevel,
 			},
 		},
 	)

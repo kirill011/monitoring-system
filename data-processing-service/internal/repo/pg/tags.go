@@ -66,23 +66,24 @@ func (r *tagsRepo) Rollback() error {
 }
 
 const tagsRepoQueryInsert = `
-insert into tags (name, device_id, regexp, compare_type, value, array_index, subject, servinity_level, created_at)
+insert into tags (name, device_id, regexp, compare_type, value, array_index, subject, severity_level, created_at)
 values
-(:name, :device_id, :regexp, :compare_type, :value, :array_index, :subject, servinity_level, :created_at)
-returning id, "name", device_id, regexp, compare_type, value, array_index, subject, servinity_level, created_at, updated_at;
+(:name, :device_id, :regexp, :compare_type, :value, :array_index, :subject, :severity_level, :created_at)
+returning id, "name", device_id, regexp, compare_type, value, array_index, subject, severity_level, created_at, updated_at;
 `
 
 func (r *tagsRepo) Create(opts models.Tag) (models.Tag, error) {
 	query, args, err := sqlx.Named(tagsRepoQueryInsert,
 		map[string]any{
-			"name":         opts.Name,
-			"device_id":    opts.DeviceId,
-			"regexp":       opts.Regexp,
-			"compare_type": opts.CompareType,
-			"value":        opts.Value,
-			"array_index":  opts.ArrayIndex,
-			"subject":      opts.Subject,
-			"created_at":   time.Now(),
+			"name":           opts.Name,
+			"device_id":      opts.DeviceId,
+			"regexp":         opts.Regexp,
+			"compare_type":   opts.CompareType,
+			"value":          opts.Value,
+			"array_index":    opts.ArrayIndex,
+			"subject":        opts.Subject,
+			"severity_level": opts.SeverityLevel,
+			"created_at":     time.Now(),
 		},
 	)
 	if err != nil {
@@ -106,7 +107,7 @@ func (r *tagsRepo) Create(opts models.Tag) (models.Tag, error) {
 }
 
 const tagsRepoQueryRead = `
-select id, "name", device_id, regexp, compare_type, value, array_index, subject, servinity_level, created_at, updated_at from tags
+select id, "name", device_id, regexp, compare_type, value, array_index, subject, severity_level, created_at, updated_at from tags
 where deleted_at is null;
 `
 
@@ -129,7 +130,7 @@ set name = coalesce(:name, name),
 	value = coalesce(:value, value),
 	array_index = coalesce(:array_index, array_index),
 	subject = coalesce(:subject, subject),
-	servinity_level = coalesce(:servinity_level, servinity_level),
+	severity_level = coalesce(:severity_level, severity_level),
 	updated_at = :updated_at
 where id = :id and deleted_at is null;
 `
@@ -137,27 +138,27 @@ where id = :id and deleted_at is null;
 func (r *tagsRepo) Update(ctx context.Context, opts repo.UpdateTagsOpts) error {
 	_, err := r.tx.NamedExecContext(ctx, tagsRepoQueryUpdate,
 		struct {
-			ID             int32     `db:"id"`
-			Name           *string   `db:"name"`
-			DeviceId       *int32    `db:"device_id"`
-			Regexp         *string   `db:"regexp"`
-			CompareType    *string   `db:"compare_type"`
-			Value          *string   `db:"value"`
-			ArrayIndex     *int32    `db:"array_index"`
-			Subject        *string   `db:"subject"`
-			ServinityLevel *string   `db:"servinity_level"`
-			UpdatedAt      time.Time `db:"updated_at"`
+			ID            int32     `db:"id"`
+			Name          *string   `db:"name"`
+			DeviceId      *int32    `db:"device_id"`
+			Regexp        *string   `db:"regexp"`
+			CompareType   *string   `db:"compare_type"`
+			Value         *string   `db:"value"`
+			ArrayIndex    *int32    `db:"array_index"`
+			Subject       *string   `db:"subject"`
+			SeverityLevel *string   `db:"severity_level"`
+			UpdatedAt     time.Time `db:"updated_at"`
 		}{
-			ID:             opts.ID,
-			Name:           opts.Name,
-			DeviceId:       opts.DeviceId,
-			Regexp:         opts.Regexp,
-			CompareType:    opts.CompareType,
-			Value:          opts.Value,
-			ArrayIndex:     opts.ArrayIndex,
-			Subject:        opts.Subject,
-			ServinityLevel: opts.ServinityLevel,
-			UpdatedAt:      time.Now(),
+			ID:            opts.ID,
+			Name:          opts.Name,
+			DeviceId:      opts.DeviceId,
+			Regexp:        opts.Regexp,
+			CompareType:   opts.CompareType,
+			Value:         opts.Value,
+			ArrayIndex:    opts.ArrayIndex,
+			Subject:       opts.Subject,
+			SeverityLevel: opts.SeverityLevel,
+			UpdatedAt:     time.Now(),
 		},
 	)
 	if err != nil {

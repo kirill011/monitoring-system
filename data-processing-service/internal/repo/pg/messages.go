@@ -61,20 +61,20 @@ func (r *messagesRepo) Rollback() error {
 }
 
 const messagesRepoQueryInsert = `
-insert into tags (got_at, device_id, message, message_type, servinity_level, component)
+insert into messages (got_at, device_id, message, message_type, severity_level, component)
 values
-(:got_at, :device_id, :message, :message_type, :servinity_level, :component)
+(:got_at, :device_id, :message, :message_type, :severity_level, :component)
 `
 
 func (r *messagesRepo) Create(opts models.Message) error {
 	_, err := r.tx.NamedExec(messagesRepoQueryInsert,
 		map[string]any{
-			"got_at":          time.Now(),
-			"device_id":       opts.DeviceId,
-			"message":         opts.Message,
-			"message_type":    opts.MessageType,
-			"servinity_level": opts.ServinityLevel,
-			"component":       opts.Component,
+			"got_at":         time.Now(),
+			"device_id":      opts.DeviceId,
+			"message":        opts.Message,
+			"message_type":   opts.MessageType,
+			"severity_level": opts.SeverityLevel,
+			"component":      opts.Component,
 		},
 	)
 	if err != nil {

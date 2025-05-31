@@ -79,15 +79,15 @@ func (s *TagsService) Read(ctx context.Context) (ReadResult, error) {
 
 type (
 	UpdateParams struct {
-		ID             int32
-		Name           *string
-		DeviceId       *int32
-		Regexp         *string
-		CompareType    *string
-		Value          *string
-		ArrayIndex     *int32
-		Subject        *string
-		ServinityLevel *string
+		ID            int32
+		Name          *string
+		DeviceId      *int32
+		Regexp        *string
+		CompareType   *string
+		Value         *string
+		ArrayIndex    *int32
+		Subject       *string
+		SeverityLevel *string
 	}
 )
 
@@ -99,15 +99,15 @@ func (s *TagsService) Update(ctx context.Context, params UpdateParams) error {
 	defer tx.Rollback()
 
 	err = tx.Update(ctx, repo.UpdateTagsOpts{
-		ID:             params.ID,
-		Name:           params.Name,
-		DeviceId:       params.DeviceId,
-		Regexp:         params.Regexp,
-		CompareType:    params.CompareType,
-		Value:          params.Value,
-		ArrayIndex:     params.ArrayIndex,
-		Subject:        params.Subject,
-		ServinityLevel: params.ServinityLevel,
+		ID:            params.ID,
+		Name:          params.Name,
+		DeviceId:      params.DeviceId,
+		Regexp:        params.Regexp,
+		CompareType:   params.CompareType,
+		Value:         params.Value,
+		ArrayIndex:    params.ArrayIndex,
+		Subject:       params.Subject,
+		SeverityLevel: params.SeverityLevel,
 	})
 	if err != nil {
 		return fmt.Errorf("s.repo.Update: %w", err)

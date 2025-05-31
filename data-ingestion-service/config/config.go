@@ -13,6 +13,7 @@ type Config struct {
 	Logger Logger
 	App    AppConfig
 	Nats   NatsConfig
+	Server ServerConfig
 }
 
 type Logger struct {

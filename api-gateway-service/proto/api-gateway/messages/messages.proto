@@ -29,7 +29,7 @@ message ReportGetAllByPeriod{
 	google.protobuf.Timestamp GotAt = 6;
 	string Message = 7;
 	string MessageType = 8;
-    string ServinityLevel = 9;
+    string SeverityLevel = 9;
     string Component = 10;
 }
 
@@ -51,7 +51,7 @@ message ReportGetAllByDeviceId{
 	google.protobuf.Timestamp GotAt = 6;
 	string Message = 7;
 	string MessageType = 8;
-    string ServinityLevel = 9;
+    string SeverityLevel = 9;
     string Component = 10;
 }
 

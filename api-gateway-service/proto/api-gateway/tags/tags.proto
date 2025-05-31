@@ -15,7 +15,7 @@ message Tag {
     string Value = 6;
     int32 ArrayIndex = 7;
     string Subject = 8;
-    string ServinityLevel = 9;
+    string SeverityLevel = 9;
 	google.protobuf.Timestamp CreatedAt = 10;
 	google.protobuf.Timestamp UpdatedAt = 11;
 }

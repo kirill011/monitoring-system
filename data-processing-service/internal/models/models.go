@@ -7,17 +7,17 @@ import (
 )
 
 type Tag struct {
-	ID             int32      `db:"id"`
-	Name           string     `db:"name"`
-	DeviceId       int32      `db:"device_id"`
-	Regexp         string     `db:"regexp"`
-	CompareType    string     `db:"compare_type"`
-	Value          string     `db:"value"`
-	ArrayIndex     int32      `db:"array_index"`
-	Subject        string     `db:"subject"`
-	ServinityLevel string     `db:"servinity_level"`
-	CreatedAt      *time.Time `db:"created_at"`
-	UpdatedAt      *time.Time `db:"updated_at"`
+	ID            int32      `db:"id"`
+	Name          string     `db:"name"`
+	DeviceId      int32      `db:"device_id"`
+	Regexp        string     `db:"regexp"`
+	CompareType   string     `db:"compare_type"`
+	Value         string     `db:"value"`
+	ArrayIndex    int32      `db:"array_index"`
+	Subject       string     `db:"subject"`
+	SeverityLevel string     `db:"severity_level"`
+	CreatedAt     *time.Time `db:"created_at"`
+	UpdatedAt     *time.Time `db:"updated_at"`
 
 	CompareFunc    func(string, string) bool `json:"-" db:"-"`
 	CompiledRegexp *regexp.Regexp            `json:"-" db:"-"`
@@ -36,13 +36,13 @@ type Device struct {
 }
 
 type Message struct {
-	Id             int32     `db:"id"`
-	GotAt          time.Time `db:"got_at"`
-	DeviceId       int32     `db:"device_id"`
-	Message        string    `db:"message"`
-	MessageType    string    `db:"message_type"`
-	ServinityLevel string    `db:"servinity_level"`
-	Component      string    `db:"component"`
+	Id            int32     `db:"id"`
+	GotAt         time.Time `db:"got_at"`
+	DeviceId      int32     `db:"device_id"`
+	Message       string    `db:"message"`
+	MessageType   string    `db:"message_type"`
+	SeverityLevel string    `db:"severity_level"`
+	Component     string    `db:"component"`
 }
 
 type CountByDeviceID struct {

@@ -23,20 +23,20 @@ const (
 )
 
 type Tag struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ID             int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
-	Name           string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
-	DeviceID       int32                  `protobuf:"varint,3,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
-	Regexp         string                 `protobuf:"bytes,4,opt,name=Regexp,proto3" json:"Regexp,omitempty"`
-	CompareType    string                 `protobuf:"bytes,5,opt,name=CompareType,proto3" json:"CompareType,omitempty"`
-	Value          string                 `protobuf:"bytes,6,opt,name=Value,proto3" json:"Value,omitempty"`
-	ArrayIndex     int32                  `protobuf:"varint,7,opt,name=ArrayIndex,proto3" json:"ArrayIndex,omitempty"`
-	Subject        string                 `protobuf:"bytes,8,opt,name=Subject,proto3" json:"Subject,omitempty"`
-	ServinityLevel string                 `protobuf:"bytes,9,opt,name=ServinityLevel,proto3" json:"ServinityLevel,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=UpdatedAt,proto3" json:"UpdatedAt,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ID            int32                  `protobuf:"varint,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=Name,proto3" json:"Name,omitempty"`
+	DeviceID      int32                  `protobuf:"varint,3,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
+	Regexp        string                 `protobuf:"bytes,4,opt,name=Regexp,proto3" json:"Regexp,omitempty"`
+	CompareType   string                 `protobuf:"bytes,5,opt,name=CompareType,proto3" json:"CompareType,omitempty"`
+	Value         string                 `protobuf:"bytes,6,opt,name=Value,proto3" json:"Value,omitempty"`
+	ArrayIndex    int32                  `protobuf:"varint,7,opt,name=ArrayIndex,proto3" json:"ArrayIndex,omitempty"`
+	Subject       string                 `protobuf:"bytes,8,opt,name=Subject,proto3" json:"Subject,omitempty"`
+	SeverityLevel string                 `protobuf:"bytes,9,opt,name=SeverityLevel,proto3" json:"SeverityLevel,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=CreatedAt,proto3" json:"CreatedAt,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=UpdatedAt,proto3" json:"UpdatedAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Tag) Reset() {
@@ -125,9 +125,9 @@ func (x *Tag) GetSubject() string {
 	return ""
 }
 
-func (x *Tag) GetServinityLevel() string {
+func (x *Tag) GetSeverityLevel() string {
 	if x != nil {
-		return x.ServinityLevel
+		return x.SeverityLevel
 	}
 	return ""
 }
@@ -475,7 +475,7 @@ var File_tags_proto protoreflect.FileDescriptor
 const file_tags_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"tags.proto\x12\x06pbtags\x1a\x1fgoogle/protobuf/timestamp.proto\"\xeb\x02\n" +
+	"tags.proto\x12\x06pbtags\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe9\x02\n" +
 	"\x03Tag\x12\x0e\n" +
 	"\x02ID\x18\x01 \x01(\x05R\x02ID\x12\x12\n" +
 	"\x04Name\x18\x02 \x01(\tR\x04Name\x12\x1a\n" +
@@ -486,8 +486,8 @@ const file_tags_proto_rawDesc = "" +
 	"\n" +
 	"ArrayIndex\x18\a \x01(\x05R\n" +
 	"ArrayIndex\x12\x18\n" +
-	"\aSubject\x18\b \x01(\tR\aSubject\x12&\n" +
-	"\x0eServinityLevel\x18\t \x01(\tR\x0eServinityLevel\x128\n" +
+	"\aSubject\x18\b \x01(\tR\aSubject\x12$\n" +
+	"\rSeverityLevel\x18\t \x01(\tR\rSeverityLevel\x128\n" +
 	"\tCreatedAt\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tCreatedAt\x128\n" +
 	"\tUpdatedAt\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tUpdatedAt\"*\n" +
