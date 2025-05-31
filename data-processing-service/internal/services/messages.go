@@ -46,7 +46,7 @@ func NewMessagesService(cfg Config) Messages {
 		tagRepo:     cfg.TagRepo,
 		log:         cfg.Log,
 	}
-
+	messagesService.UpdateTags()
 	messagesService.setNotificationCron(messagesService.notificationPeriod)
 	return messagesService
 }
