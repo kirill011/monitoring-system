@@ -153,7 +153,7 @@ func (s *Server) setMiddleware(logQuerys bool) {
 }
 
 func (s *Server) setHandlers() {
-	rootRoute := s.app.Group("/data-processing-service")
+	rootRoute := s.app.Group("/data-ingestion-service")
 
 	handlerV1 := v1.NewHandler(v1.Config{
 		MessageHandler:    s.messageHandler,
