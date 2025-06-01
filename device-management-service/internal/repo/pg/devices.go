@@ -33,7 +33,7 @@ func NewDevicesRepo(p *postgres.Postgres, log *zap.Logger) repo.Devices {
 	}
 }
 
-func (r *devicesRepo) BeginTx(ctx context.Context) (repo.Devices, error) {
+func (r devicesRepo) BeginTx(ctx context.Context) (repo.Devices, error) {
 	tx, err := r.db.BeginTxx(ctx, &sql.TxOptions{
 		Isolation: 0,
 		ReadOnly:  false,
@@ -47,7 +47,7 @@ func (r *devicesRepo) BeginTx(ctx context.Context) (repo.Devices, error) {
 	return r, nil
 }
 
-func (r *devicesRepo) Commit() error {
+func (r devicesRepo) Commit() error {
 	err := r.tx.Commit()
 	if err != nil {
 		return fmt.Errorf("r.tx.Commit: %w", err)
@@ -56,7 +56,7 @@ func (r *devicesRepo) Commit() error {
 	return nil
 }
 
-func (r *devicesRepo) Rollback() error {
+func (r devicesRepo) Rollback() error {
 	err := r.tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("r.tx.Rollback: %w", err)
@@ -72,7 +72,7 @@ values
 returning id, device_type, "name", address, responsible, created_at, updated_at;
 `
 
-func (r *devicesRepo) Create(opts models.Device) (models.Device, error) {
+func (r devicesRepo) Create(opts models.Device) (models.Device, error) {
 	rows, err := r.tx.NamedQuery(devicesRepoQueryInsertPerson,
 		map[string]any{
 			"name":        opts.Name,
@@ -116,7 +116,7 @@ select id, device_type, "name", address, responsible, created_at, updated_at fro
 where deleted_at is null;
 `
 
-func (r *devicesRepo) Read(ctx context.Context) (repo.ReadDevicesResult, error) {
+func (r devicesRepo) Read(ctx context.Context) (repo.ReadDevicesResult, error) {
 	var result repo.ReadDevicesResult
 	err := r.tx.SelectContext(ctx, &result.Devices, devicesRepoQueryRead)
 	if err != nil {
@@ -136,7 +136,7 @@ set name = coalesce(:name, name),
 where id = :id and deleted_at is null;
 `
 
-func (r *devicesRepo) Update(ctx context.Context, opts repo.UpdateDeviceOpts) error {
+func (r devicesRepo) Update(ctx context.Context, opts repo.UpdateDeviceOpts) error {
 	var responsible []int32
 	if len(opts.Responsible) != 0 {
 		responsible = opts.Responsible
@@ -169,7 +169,7 @@ delete from devices
 where id = :id and deleted_at is null;
 `
 
-func (r *devicesRepo) Delete(ctx context.Context, id int32) error {
+func (r devicesRepo) Delete(ctx context.Context, id int32) error {
 	_, err := r.tx.NamedExecContext(ctx, devicesRepoQueryDelete,
 		map[string]any{
 			"id": id,
@@ -186,7 +186,7 @@ select responsible from devices
 where id = :id and deleted_at is null;
 `
 
-func (r *devicesRepo) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
+func (r devicesRepo) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
 	var responsibleIds models.SqlJsonbIntArray
 
 	rows, err := r.tx.NamedQuery(devicesRepoQueryGetResponsible,

@@ -33,7 +33,7 @@ func NewTagsRepo(p *postgres.Postgres, log *zap.Logger) repo.Tags {
 	}
 }
 
-func (r *tagsRepo) BeginTx(ctx context.Context) (repo.Tags, error) {
+func (r tagsRepo) BeginTx(ctx context.Context) (repo.Tags, error) {
 	tx, err := r.db.BeginTxx(ctx, &sql.TxOptions{
 		Isolation: 0,
 		ReadOnly:  false,
@@ -47,7 +47,7 @@ func (r *tagsRepo) BeginTx(ctx context.Context) (repo.Tags, error) {
 	return r, nil
 }
 
-func (r *tagsRepo) Commit() error {
+func (r tagsRepo) Commit() error {
 	err := r.tx.Commit()
 	if err != nil {
 		return fmt.Errorf("r.tx.Commit: %w", err)
@@ -56,7 +56,7 @@ func (r *tagsRepo) Commit() error {
 	return nil
 }
 
-func (r *tagsRepo) Rollback() error {
+func (r tagsRepo) Rollback() error {
 	err := r.tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("r.tx.Rollback: %w", err)
@@ -72,7 +72,7 @@ values
 returning id, "name", device_id, regexp, compare_type, value, array_index, subject, severity_level, created_at, updated_at;
 `
 
-func (r *tagsRepo) Create(opts models.Tag) (models.Tag, error) {
+func (r tagsRepo) Create(opts models.Tag) (models.Tag, error) {
 	query, args, err := sqlx.Named(tagsRepoQueryInsert,
 		map[string]any{
 			"name":           opts.Name,
@@ -111,7 +111,7 @@ select id, "name", device_id, regexp, compare_type, value, array_index, subject,
 where deleted_at is null;
 `
 
-func (r *tagsRepo) Read(ctx context.Context) (repo.ReadTagsResult, error) {
+func (r tagsRepo) Read(ctx context.Context) (repo.ReadTagsResult, error) {
 	var result repo.ReadTagsResult
 	err := r.tx.SelectContext(ctx, &result.Tags, tagsRepoQueryRead)
 	if err != nil {
@@ -135,7 +135,7 @@ set name = coalesce(:name, name),
 where id = :id and deleted_at is null;
 `
 
-func (r *tagsRepo) Update(ctx context.Context, opts repo.UpdateTagsOpts) error {
+func (r tagsRepo) Update(ctx context.Context, opts repo.UpdateTagsOpts) error {
 	_, err := r.tx.NamedExecContext(ctx, tagsRepoQueryUpdate,
 		struct {
 			ID            int32     `db:"id"`
@@ -172,7 +172,7 @@ delete from tags
 where id = :id and deleted_at is null;
 `
 
-func (r *tagsRepo) Delete(ctx context.Context, id int32) error {
+func (r tagsRepo) Delete(ctx context.Context, id int32) error {
 	_, err := r.tx.NamedExecContext(ctx, tagsRepoQueryDelete,
 		map[string]any{
 			"id": id,

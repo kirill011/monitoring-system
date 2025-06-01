@@ -28,7 +28,7 @@ func NewMessagesRepo(p *postgres.Postgres, log *zap.Logger) repo.Messages {
 	}
 }
 
-func (r *messagesRepo) BeginTx(ctx context.Context) (repo.Messages, error) {
+func (r messagesRepo) BeginTx(ctx context.Context) (repo.Messages, error) {
 	tx, err := r.db.BeginTxx(ctx, &sql.TxOptions{
 		Isolation: 0,
 		ReadOnly:  false,
@@ -42,7 +42,7 @@ func (r *messagesRepo) BeginTx(ctx context.Context) (repo.Messages, error) {
 	return r, nil
 }
 
-func (r *messagesRepo) Commit() error {
+func (r messagesRepo) Commit() error {
 	err := r.tx.Commit()
 	if err != nil {
 		return fmt.Errorf("r.tx.Commit: %w", err)
@@ -51,7 +51,7 @@ func (r *messagesRepo) Commit() error {
 	return nil
 }
 
-func (r *messagesRepo) Rollback() error {
+func (r messagesRepo) Rollback() error {
 	err := r.tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("r.tx.Rollback: %w", err)
@@ -66,7 +66,7 @@ values
 (:got_at, :device_id, :message, :message_type, :severity_level, :component)
 `
 
-func (r *messagesRepo) Create(opts models.Message) error {
+func (r messagesRepo) Create(opts models.Message) error {
 	_, err := r.tx.NamedExec(messagesRepoQueryInsert,
 		map[string]any{
 			"got_at":         time.Now(),
@@ -91,7 +91,7 @@ Where got_at between :start and :end
 order by got_at desc
 `
 
-func (r *messagesRepo) GetAllByPeriod(opts repo.MessagesGetAllByPeriodOpts) ([]models.Message, error) {
+func (r messagesRepo) GetAllByPeriod(opts repo.MessagesGetAllByPeriodOpts) ([]models.Message, error) {
 	messages := make([]models.Message, 0)
 
 	query, args, err := sqlx.Named(messagesRepoQueryGetAllByPeriod, map[string]any{
@@ -119,7 +119,7 @@ where device_id = :device_id
 order by got_at desc
 `
 
-func (r *messagesRepo) GetAllByDeviceId(deviceID int32) ([]models.Message, error) {
+func (r messagesRepo) GetAllByDeviceId(deviceID int32) ([]models.Message, error) {
 	messages := make([]models.Message, 0)
 
 	query, args, err := sqlx.Named(messagesRepoQueryGetAllByDeviceId, map[string]any{
@@ -144,7 +144,7 @@ where message_type = :message_type
 group by device_id
 `
 
-func (r *messagesRepo) GetCountByMessageType(messageType string) (repo.GetCountByMessageTypeResult, error) {
+func (r messagesRepo) GetCountByMessageType(messageType string) (repo.GetCountByMessageTypeResult, error) {
 	counts := make([]models.CountByDeviceID, 0)
 
 	query, args, err := sqlx.Named(messagesRepoQueryGetCountByMessageType,
@@ -270,7 +270,7 @@ FROM (
 ORDER BY device_id, total_messages DESC;
 `
 
-func (r *messagesRepo) MonthReport() ([]models.MonthReportRow, error) {
+func (r messagesRepo) MonthReport() ([]models.MonthReportRow, error) {
 	result := make([]models.MonthReportRow, 0)
 
 	err := r.tx.Select(&result, messagesRepoQueryMonthReport)

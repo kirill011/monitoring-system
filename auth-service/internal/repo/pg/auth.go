@@ -32,7 +32,7 @@ func NewAuthRepo(p *postgres.Postgres, log *zap.Logger) repo.Auth {
 	}
 }
 
-func (r *authRepo) BeginTx(ctx context.Context) (repo.Auth, error) {
+func (r authRepo) BeginTx(ctx context.Context) (repo.Auth, error) {
 	tx, err := r.db.BeginTxx(ctx, &sql.TxOptions{
 		Isolation: 0,
 		ReadOnly:  false,
@@ -46,7 +46,7 @@ func (r *authRepo) BeginTx(ctx context.Context) (repo.Auth, error) {
 	return r, nil
 }
 
-func (r *authRepo) Commit() error {
+func (r authRepo) Commit() error {
 	err := r.tx.Commit()
 	if err != nil {
 		return fmt.Errorf("r.tx.Commit: %w", err)
@@ -55,7 +55,7 @@ func (r *authRepo) Commit() error {
 	return nil
 }
 
-func (r *authRepo) Rollback() error {
+func (r authRepo) Rollback() error {
 	err := r.tx.Rollback()
 	if err != nil {
 		return fmt.Errorf("r.tx.Rollback: %w", err)
@@ -71,7 +71,7 @@ values
 returning id, name, email;
 `
 
-func (r *authRepo) Create(opts repo.CreateUserOpts) (repo.CreateUserResult, error) {
+func (r authRepo) Create(opts repo.CreateUserOpts) (repo.CreateUserResult, error) {
 	rows, err := r.tx.NamedQuery(usersRepoQueryInsertPerson,
 		struct {
 			Name      string    `db:"name"`
@@ -119,7 +119,7 @@ select id, name, email, created_at, updated_at from users
 where deleted_at is null;
 `
 
-func (r *authRepo) Read(ctx context.Context) (repo.ReadUsersResult, error) {
+func (r authRepo) Read(ctx context.Context) (repo.ReadUsersResult, error) {
 	var result repo.ReadUsersResult
 	err := r.tx.SelectContext(ctx, &result.Users, usersRepoQuerySelectUsers)
 	if err != nil {
@@ -138,7 +138,7 @@ set name = coalesce(:name, name),
 where id = :id and deleted_at is null;
 `
 
-func (r *authRepo) Update(ctx context.Context, opts repo.UpdateUsersOpts) error {
+func (r authRepo) Update(ctx context.Context, opts repo.UpdateUsersOpts) error {
 	_, err := r.tx.NamedExecContext(ctx, usersRepoQueryUpdateUser,
 		struct {
 			ID        int32     `db:"id"`
@@ -165,7 +165,7 @@ delete from users
 where id = :id and deleted_at is null;
 `
 
-func (r *authRepo) Delete(ctx context.Context, userID int32) error {
+func (r authRepo) Delete(ctx context.Context, userID int32) error {
 	_, err := r.tx.NamedExecContext(ctx, usersRepoQueryDeletePerson,
 		struct {
 			ID int32 `db:"id"`
@@ -185,7 +185,7 @@ where email = :email and password = :password and deleted_at is null
 limit 1;
 `
 
-func (r *authRepo) Authorize(opts repo.AuthorizeOpts) (int, error) {
+func (r authRepo) Authorize(opts repo.AuthorizeOpts) (int, error) {
 	rows, err := r.tx.NamedQuery(usersRepoQueryAuthorizePerson,
 		struct {
 			Email    string `db:"email"`
@@ -222,7 +222,7 @@ const usersRepoQueryGetEmailByID = `
 select email from users
 where id in (:users_ids) and deleted_at is null`
 
-func (r *authRepo) GetEmailsByIDs(ctx context.Context, userIDs []int32) ([]string, error) {
+func (r authRepo) GetEmailsByIDs(ctx context.Context, userIDs []int32) ([]string, error) {
 	var emails []string
 
 	query, args, err := sqlx.Named(usersRepoQueryGetEmailByID,
