@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"notification-service/config"
+	httpsender "notification-service/internal/transport/http"
 	natslisteners "notification-service/internal/transport/nats"
 	smtpsender "notification-service/internal/transport/smtp"
 	"notification-service/pkg/closer"
@@ -33,11 +34,18 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		Password: cfg.SMTP.Password,
 	})
 
+	httpsender := httpsender.New(httpsender.Config{
+		Host:     cfg.HTTP.Host,
+		Port:     cfg.HTTP.Port,
+		Endpoint: cfg.HTTP.Endpoint,
+	})
+
 	listeners := natslisteners.NewListener(natslisteners.Config{
 		NatsConn:   nats.NatsConn,
 		Log:        log,
 		Timeout:    cfg.Nats.Timeout,
 		SMTPSender: smtpsender,
+		HTTPSender: httpsender,
 	})
 
 	go func() {

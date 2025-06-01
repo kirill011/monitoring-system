@@ -14,6 +14,7 @@ type Config struct {
 	App    AppConfig
 	Nats   NatsConfig
 	SMTP   SMTPConfig
+	HTTP   HTTPConfig
 }
 
 type Logger struct {
@@ -36,6 +37,12 @@ type SMTPConfig struct {
 	Port     string `env:"SMTP_PORT,required"`
 	User     string `env:"SMTP_USER,required"`
 	Password string `env:"SMTP_PASSWORD,required"`
+}
+
+type HTTPConfig struct {
+	Host     string `env:"HTTP_HOST,required"`
+	Port     string `env:"HTTP_PORT,required"`
+	Endpoint string `env:"HTTP_ENDPOINT,required"`
 }
 
 var (
