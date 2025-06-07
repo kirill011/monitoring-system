@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     postgresql-client
 
 # Клонирование и сборка Odyssey
-RUN git clone https://github.com/yandex/odyssey.git /odyssey \
+RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
     && cd /odyssey \
     && mkdir build \
     && cd build \
