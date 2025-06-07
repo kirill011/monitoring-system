@@ -81,7 +81,7 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: auth-service
       LOG_PATH: /var/log/auth-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-auth:6432/postgres
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-auth:6432/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: auth
       TOKEN_JWT_KEY: kg#n5Q2SP7A4/T.v
@@ -110,7 +110,7 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: device-management-service
       LOG_PATH: /var/log/device-management-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-device-management:6433/postgres
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-device-management:6433/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: devices
       SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
@@ -142,7 +142,7 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: data-processing-service
       LOG_PATH: /var/log/data-processing-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-data-processing:6434/postgres
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-data-processing:6434/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: dataprocessing
       APP_SHUTDOWN_TIMEOUT: 30s
