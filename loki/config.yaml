@@ -5,9 +5,6 @@ server:
 
 common:
   path_prefix: /loki
-  storage:
-    filesystem:
-      chunks_cache_directory: /loki/data/chunks
   replication_factor: 1
 
 storage_config:
