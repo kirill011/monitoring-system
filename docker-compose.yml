@@ -357,6 +357,7 @@ services:
     container_name: loki
     ports:
       - "3100:3100"
+      - "9093:9093"
     command:
       - "-config.expand-env"
       - "-config.file=/etc/loki/config.yaml"
