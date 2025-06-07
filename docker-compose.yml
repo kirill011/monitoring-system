@@ -268,7 +268,7 @@ services:
     - -c 
     - hba_file=/var/lib/postgresql/data/pg_hba.conf
     - -c 
-    - password_encryption=scram-sha-256
+    - password_encryption=md5
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
@@ -293,7 +293,7 @@ services:
     - -c 
     - hba_file=/var/lib/postgresql/data/pg_hba.conf
     - -c 
-    - password_encryption=scram-sha-256
+    - password_encryption=md5
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
@@ -318,7 +318,7 @@ services:
     - -c 
     - hba_file=/var/lib/postgresql/data/pg_hba.conf
     - -c 
-    - password_encryption=scram-sha-256
+    - password_encryption=md5
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
