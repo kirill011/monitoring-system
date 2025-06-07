@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     git \
     libpq-dev \
     libssl-dev \
-    postgresql-client
+    postgresql-client\ 
+    postgresql-dev
 
 # Клонирование и сборка Odyssey
 RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
