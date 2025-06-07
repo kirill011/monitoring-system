@@ -115,7 +115,7 @@ services:
       DB_APPLICATION_SCHEMA: devices
       SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
       SERVER_ADDR: :13692
-      SERVER_LOG_QUERYS: false
+      SERVER_LOG_QUERYS: "false"
       APP_SHUTDOWN_TIMEOUT: 30s
       NATS_URL: nats:4222
     depends_on:
@@ -215,7 +215,7 @@ services:
       SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
       SERVER_ADDR: :13693
       SERVER_TOKEN_LIFE_TIME: 3h
-      SERVER_LOG_QUERYS: false
+      SERVER_LOG_QUERYS: "false"
       APP_SHUTDOWN_TIMEOUT: 30s
       NATS_URL: nats:4222
       NATS_TIMEOUT: 30m
@@ -250,7 +250,7 @@ services:
       NATS_URL: nats:4222
       NATS_TIMEOUT: 1s
       SERVER_ADDR: :13695
-      SERVER_LOG_QUERYS: false
+      SERVER_LOG_QUERYS: "false"
       SERVER_DEVICE_CHECK_PERIOD: 5
     depends_on:
       device-management-service:
