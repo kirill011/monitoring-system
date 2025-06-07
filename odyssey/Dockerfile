@@ -26,7 +26,5 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /odyssey/build/sources/odyssey /usr/bin/odyssey
-COPY odyssey.conf /etc/odyssey/odyssey.conf
 
-EXPOSE 6432
 CMD ["odyssey", "/etc/odyssey/odyssey.conf"]
