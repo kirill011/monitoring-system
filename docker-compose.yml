@@ -359,7 +359,7 @@ services:
       - "3100:3100"
     command:
       - "-config.expand-env"
-      - "-config.file=/etc/loki/config.yml"
+      - "-config.file=/etc/loki/config.yaml"
     environment:
       - LOKI_PORT=3100
     volumes:
