@@ -7,7 +7,9 @@ common:
   path_prefix: /loki
   storage:
     filesystem:
-      directory: /loki/data/chunks
+      chunks_directory: /loki/data/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
 
 schema_config:
   configs:
@@ -20,16 +22,15 @@ schema_config:
         period: 24h
 
 storage_config:
-  filesystem:
-    directory: /loki/data/chunks
   boltdb_shipper:
     active_index_directory: /loki/data/boltdb
     cache_location: /loki/data/cache
-    shared_store: filesystem
+    cache_size_bytes: 5GB
     cache_ttl: 24h
 
 limits_config:
-  allow_structured_metadata: false  # <---- отключаем структурированные метаданные
+  allow_structured_metadata: false
 
 ruler:
   rule_path: /loki/rules
+  alertmanager_url: http://alertmanager:9093
