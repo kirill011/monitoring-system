@@ -1,14 +1,14 @@
 FROM ubuntu:22.04 AS builder
 
-# Установка зависимостей
-RUN apt-get update && apt-get install -y \
+# Установка зависимостей для сборки
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \
     cmake \
     git \
     libpq-dev \
     libssl-dev \
-    postgresql-client\ 
-    postgresql-dev
+    postgresql-server-dev-14 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Клонирование и сборка Odyssey
 RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
@@ -18,11 +18,18 @@ RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
 # Финальный образ
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y \
+# Runtime зависимости
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     libssl3 \
-    postgresql-client \
+    libpq5 \
+    postgresql-client-14 \
     && rm -rf /var/lib/apt/lists/*
 
+# Копируем бинарник Odyssey
 COPY --from=builder /odyssey/build/sources/odyssey /usr/bin/odyssey
+
+# Создаем директорию для конфигов и пример конфига
+RUN mkdir -p /etc/odyssey \
+    && odyssey --default-config > /etc/odyssey/odyssey.conf
 
 CMD ["odyssey", "/etc/odyssey/odyssey.conf"]
