@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
 # Клонирование и сборка Odyssey
 RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
     && cd /odyssey \
-    && mkdir build \
-    && cd build \
-    && cmake .. \
     && make local_build
 
 # Финальный образ
