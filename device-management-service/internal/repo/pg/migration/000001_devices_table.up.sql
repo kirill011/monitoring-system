@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS devices (
 		updated_at timestamp without time zone NULL,
 		deleted_at timestamp without time zone NULL,
 		CONSTRAINT devices_pk PRIMARY KEY (id),
-		CONSTRAINT devices_name_unique UNIQUE ("name"),
-		CONSTRAINT devices_address_unique UNIQUE (address)
+		CONSTRAINT devices_name_unique UNIQUE ("name")
 	);
 
