@@ -1,4 +1,64 @@
+version: '3.8'
+
 services:
+  # Odyssey для auth-service
+  odyssey-auth:
+    image: yandex/odyssey
+    command: odyssey /etc/odyssey/odyssey.conf
+    volumes:
+      - ./odyssey/auth/odyssey.conf:/etc/odyssey/odyssey.conf
+    ports:
+      - 6432:6432
+    networks:
+      - nats
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6432' || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  # Odyssey для device-management-service
+  odyssey-device-management:
+    image: yandex/odyssey
+    command: odyssey /etc/odyssey/odyssey.conf
+    volumes:
+      - ./odyssey/device-management/odyssey.conf:/etc/odyssey/odyssey.conf
+    ports:
+      - 6433:6433
+    networks:
+      - nats
+    depends_on:
+      postgres-device-management:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6433' || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  # Odyssey для data-processing-service
+  odyssey-data-processing:
+    image: yandex/odyssey
+    command: odyssey /etc/odyssey/odyssey.conf
+    volumes:
+      - ./odyssey/data-processing/odyssey.conf:/etc/odyssey/odyssey.conf
+    ports:
+      - 6434:6434
+    networks:
+      - nats
+    depends_on:
+      postgres-data-processing:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6434' || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  # Обновленные сервисы
   auth-service:
     build:
       context: ./auth-service
@@ -11,12 +71,190 @@ services:
       - .:/app/auth-service
     networks:
       - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: auth-service
+      LOG_PATH: /var/log/auth-service
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-auth:6432/postgres
+      DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
+      DB_APPLICATION_SCHEMA: auth
+      TOKEN_JWT_KEY: kg#n5Q2SP7A4/T.v
+      TOKEN_LIFE_TIME: 3h
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222  # Используем имя сервиса
     depends_on:
       nats:
         condition: service_started
-      postgres-auth: 
+      odyssey-auth:
         condition: service_healthy
 
+  device-management-service:
+    build:
+      context: ./device-management-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13692:13692
+    volumes:
+      - .:/app/device-management-service
+    networks:
+      - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: device-management-service
+      LOG_PATH: /var/log/device-management-service
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-device-management:6433/postgres
+      DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
+      DB_APPLICATION_SCHEMA: devices
+      SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
+      SERVER_ADDR: :13692
+      SERVER_LOG_QUERYS: false
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+    depends_on:
+      auth-service:
+        condition: service_started
+      odyssey-device-management:
+        condition: service_healthy
+      nats: 
+        condition: service_started
+
+  data-processing-service:
+    build:
+      context: ./data-processing-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13694:13694
+    volumes:
+      - .:/app/data-processing-service
+    networks:
+      - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: data-processing-service
+      LOG_PATH: /var/log/data-processing-service
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-data-processing:6434/postgres
+      DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
+      DB_APPLICATION_SCHEMA: dataprocessing
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+      SERVICE_NOTIFICATION_PERIOD: 5m
+      NATS_TIMEOUT: 30m
+    depends_on:
+      notification-service:
+        condition: service_started
+      odyssey-data-processing:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  # Остальные сервисы без изменений (только обновим NATS_URL)
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13691:13691
+    expose:
+      - 13691
+    volumes:
+      - .:/app/notification-service
+    networks:
+      - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: notification-service
+      LOG_PATH: /var/log/notification-service
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+      NATS_TIMEOUT: 30m
+      SMTP_HOST: smtp.freesmtpservers.com
+      SMTP_PORT: 25
+      SMTP_USER: 123
+      SMTP_PASSWORD: 321
+      HTTP_HOST: localhost
+      HTTP_PORT: 1234
+      HTTP_ENDPOINT: /email_getter
+    depends_on:
+      auth-service:
+        condition: service_started
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  api-gateway-service:
+    build:
+      context: ./api-gateway-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13693:13693
+    expose:
+      - 13693
+    volumes:
+      - .:/app/api-gateway-service
+    networks:
+      - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: api-gateway-service
+      LOG_PATH: /var/log/api-gateway-service
+      SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
+      SERVER_ADDR: :13693
+      SERVER_TOKEN_LIFE_TIME: 3h
+      SERVER_LOG_QUERYS: false
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+      NATS_TIMEOUT: 30m
+
+    depends_on:
+      auth-service:
+        condition: service_started
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+
+  data-ingestion-service:
+    build:
+      context: ./data-ingestion-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    ports:
+      - 13695:13695
+    expose:
+      - 13695
+    volumes:
+      - .:/app/data-ingestion-service
+    networks:
+      - nats
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: data-ingestion-service
+      LOG_PATH: /var/log/data-ingestion-service
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+      NATS_TIMEOUT: 1s
+      SERVER_ADDR: :13695
+      SERVER_LOG_QUERYS: false
+      SERVER_DEVICE_CHECK_PERIOD: 5
+    depends_on:
+      device-management-service:
+        condition: service_started
+      nats:
+        condition: service_started
+      data-processing-service:
+        condition: service_started
+
+  # Без изменений
   postgres-auth:
     image: postgres
     command: 
@@ -36,48 +274,6 @@ services:
       - postgres-auth-db:/var/lib/postgresql/data
     networks:
       - nats
-
-  notification-service:
-    build:
-      context: ./notification-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13691:13691
-    expose:
-      - 13691
-    volumes:
-      - .:/app/notification-service
-    networks:
-      - nats
-    depends_on:
-      auth-service:
-        condition: service_started
-      device-management-service:
-        condition: service_started
-      nats:
-        condition: service_started
-
-  device-management-service:
-    build:
-      context: ./device-management-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13692:13692
-    volumes:
-      - .:/app/device-management-service
-    networks:
-      - nats
-    depends_on:
-      auth-service:
-       condition: service_started
-      postgres-device-management:
-        condition: service_healthy
-      nats: 
-        condition: service_started
 
   postgres-device-management:
     image: postgres
@@ -99,46 +295,6 @@ services:
     networks:
       - nats
 
-  api-gateway-service:
-    build:
-      context: ./api-gateway-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13693:13693
-    expose:
-      - 13693
-    volumes:
-      - .:/app/api-gateway-service
-    networks:
-      - nats
-    depends_on:
-      auth-service:
-        condition: service_started
-      device-management-service:
-        condition: service_started
-      nats:
-        condition: service_started
-
-  data-processing-service:
-    build:
-      context: ./data-processing-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13694:13694
-    volumes:
-      - .:/app/data-processing-service
-    networks:
-      - nats
-    depends_on:
-      notification-service:
-        condition: service_started
-      nats:
-        condition: service_started
-
   postgres-data-processing:
     image: postgres
     command: 
@@ -159,28 +315,6 @@ services:
     networks:
       - nats
 
-  data-ingestion-service:
-    build:
-      context: ./data-ingestion-service
-      dockerfile: Dockerfile
-    stop_signal: SIGINT
-    stop_grace_period: 10s
-    ports:
-      - 13695:13695
-    expose:
-      - 13695
-    volumes:
-      - .:/app/data-ingestion-service
-    networks:
-      - nats
-    depends_on:
-      device-management-service:
-        condition: service_started
-      nats:
-        condition: service_started
-      data-processing-service:
-        condition: service_started
-
   nats:
     image: nats
     ports:
@@ -193,10 +327,6 @@ volumes:
   postgres-device-management-db:
   postgres-data-processing-db:
 
-
 networks:
   nats:
     name: nats
-
-
-  
