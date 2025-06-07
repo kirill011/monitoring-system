@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # Odyssey для auth-service
   odyssey-auth:
-    image: yandex/odyssey
+    build:
+      context: ./odyssey
+      dockerfile: Dockerfile
     command: odyssey /etc/odyssey/odyssey.conf
     volumes:
       - ./odyssey/auth/odyssey.conf:/etc/odyssey/odyssey.conf
@@ -22,7 +24,9 @@ services:
 
   # Odyssey для device-management-service
   odyssey-device-management:
-    image: yandex/odyssey
+    build:
+      context: ./odyssey
+      dockerfile: Dockerfile
     command: odyssey /etc/odyssey/odyssey.conf
     volumes:
       - ./odyssey/device-management/odyssey.conf:/etc/odyssey/odyssey.conf
@@ -41,7 +45,9 @@ services:
 
   # Odyssey для data-processing-service
   odyssey-data-processing:
-    image: yandex/odyssey
+    build:
+      context: ./odyssey
+      dockerfile: Dockerfile
     command: odyssey /etc/odyssey/odyssey.conf
     volumes:
       - ./odyssey/data-processing/odyssey.conf:/etc/odyssey/odyssey.conf
