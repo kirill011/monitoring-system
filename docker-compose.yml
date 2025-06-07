@@ -352,6 +352,28 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
       - 8080:8080
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command:
+      - "-config.expand-env"
+    environment:
+      - LOKI_PORT=3100
+    volumes:
+      - ./loki:/etc/loki
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail:/etc/promtail
+      - /var/log:/var/log
+    command:
+      - "-config.file=/etc/promtail/promtail-config.yml"
+    restart: unless-stopped
 
 volumes:
   postgres-auth-db:
