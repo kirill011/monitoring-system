@@ -25,7 +25,6 @@ storage_config:
   boltdb_shipper:
     active_index_directory: /loki/data/boltdb
     cache_location: /loki/data/cache
-    cache_size_bytes: 5GB
     cache_ttl: 24h
 
 limits_config:
