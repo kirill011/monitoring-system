@@ -15,7 +15,7 @@ RUN git clone --branch 1.4rc https://github.com/yandex/odyssey.git /odyssey \
     && mkdir build \
     && cd build \
     && cmake .. \
-    && make
+    && make local_build
 
 # Финальный образ
 FROM ubuntu:22.04
