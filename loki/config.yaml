@@ -4,23 +4,28 @@ server:
   http_listen_port: 3100
 
 common:
-  path_prefix: /tmp/loki
+  path_prefix: /loki
   storage:
     filesystem:
-      chunks_directory: /tmp/loki/chunks
-      rules_directory: /tmp/loki/rules
+      chunks_cache_directory: /loki/data/chunks
   replication_factor: 1
+
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/data/boltdb
+    cache_location: /loki/data/cache
+    cache_ttl: 24h
 
 schema_config:
   configs:
     - from: 2020-05-15
       store: boltdb-shipper
-      object_store_id: filesystem
-      schema: v11
+      object_store: filesystem
+      schema: v13
       index:
-        prefix: index_
+        prefix: loki_index_
         period: 24h
 
 ruler:
-  rule_path: /tmp/loki/rules
+  rule_path: /loki/rules
   alertmanager_url: http://localhost:9093
