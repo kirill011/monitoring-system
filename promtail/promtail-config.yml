@@ -1,6 +1,5 @@
 server:
   http_listen_port: 9080
-  grpc_listen_port: 0
 
 positions:
   filename: /tmp/positions.yaml
@@ -9,10 +8,17 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: system
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: varlogs
-          __path__: /var/log/*.
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: [address, meta_docker_container_path]
+        target_label: __address
+        action: replace
+        regex: (.+);/(.+)
+        replacement: ${1}/api/logs?path=/${2}
+      - source_labels: [__meta_docker_container_label_logging]
+        target_label: logging
+        action: keep
+        regex: true
