@@ -367,6 +367,8 @@ services:
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
+    ports:
+      - "9080:9080"
     volumes:
       - ./promtail:/etc/promtail
       - /var/log:/var/log
