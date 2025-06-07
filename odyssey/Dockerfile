@@ -28,8 +28,4 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 # Копируем бинарник Odyssey
 COPY --from=builder /odyssey/build/sources/odyssey /usr/bin/odyssey
 
-# Создаем директорию для конфигов и пример конфига
-RUN mkdir -p /etc/odyssey \
-    && odyssey --default-config > /etc/odyssey/odyssey.conf
-
 CMD ["odyssey", "/etc/odyssey/odyssey.conf"]
