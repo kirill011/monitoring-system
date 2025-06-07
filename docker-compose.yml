@@ -370,6 +370,8 @@ services:
     volumes:
       - ./promtail:/etc/promtail
       - /var/log:/var/log
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers
     command:
       - "-config.file=/etc/promtail/promtail-config.yml"
 
