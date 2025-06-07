@@ -265,8 +265,10 @@ services:
     image: postgres
     command: 
     - -p 5434
-    - -c hba_file=/etc/postgresql/pg_hba.conf
-    - -c password_encryption=scram-sha-256
+    - -c 
+    - hba_file=/etc/postgresql/pg_hba.conf
+    - -c 
+    - password_encryption=scram-sha-256
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
@@ -286,9 +288,11 @@ services:
   postgres-device-management:
     image: postgres
     command: 
-    - -p 5434
-    - -c hba_file=/etc/postgresql/pg_hba.conf
-    - -c password_encryption=scram-sha-256
+    - -p 5435
+    - -c 
+    - hba_file=/etc/postgresql/pg_hba.conf
+    - -c 
+    - password_encryption=scram-sha-256
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
@@ -309,8 +313,10 @@ services:
     image: postgres
     command: 
     - -p 5436
-    - -c hba_file=/etc/postgresql/pg_hba.conf
-    - -c password_encryption=scram-sha-256
+    - -c 
+    - hba_file=/etc/postgresql/pg_hba.conf
+    - -c 
+    - password_encryption=scram-sha-256
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
