@@ -282,6 +282,7 @@ services:
       - 5434:5434
     volumes:
       - postgres-auth-db:/var/lib/postgresql/data
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
 
@@ -306,6 +307,7 @@ services:
       - 5435:5435
     volumes:
       - postgres-device-management-db:/var/lib/postgresql/data
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
 
@@ -330,6 +332,7 @@ services:
       - 5436:5436
     volumes:
       - postgres-data-processing-db:/var/lib/postgresql/data
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
 
