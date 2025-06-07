@@ -3,6 +3,9 @@ auth_enabled: false
 server:
   http_listen_port: 3100
 
+# Указываем режим single-binary
+mode: single-json-file
+
 common:
   path_prefix: /loki
   storage:
@@ -32,4 +35,3 @@ limits_config:
 
 ruler:
   rule_path: /loki/rules
-  alertmanager_url: http://alertmanager:9093
