@@ -364,7 +364,6 @@ services:
       - LOKI_PORT=3100
     volumes:
       - ./loki:/etc/loki
-    restart: unless-stopped
 
   promtail:
     image: grafana/promtail:latest
@@ -374,7 +373,6 @@ services:
       - /var/log:/var/log
     command:
       - "-config.file=/etc/promtail/promtail-config.yml"
-    restart: unless-stopped
 
 volumes:
   postgres-auth-db:
