@@ -1,5 +1,6 @@
 FROM ubuntu:22.04 AS builder
 
+# Установка зависимостей
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -8,14 +9,15 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     postgresql-client
 
-# Клонируем Telegram fork
-RUN git clone https://github.com/TelegramMessenger/odyssey.git  /odyssey \
+# Клонирование и сборка Odyssey
+RUN git clone https://github.com/yandex/odyssey.git /odyssey \
     && cd /odyssey \
     && mkdir build \
     && cd build \
     && cmake .. \
     && make
 
+# Финальный образ
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
