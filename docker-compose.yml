@@ -91,6 +91,8 @@ services:
         condition: service_started
       odyssey-auth:
         condition: service_healthy
+    labels:
+      logging: "promtail"
 
   device-management-service:
     build:
@@ -123,6 +125,8 @@ services:
         condition: service_healthy
       nats: 
         condition: service_started
+    labels:
+      logging: "promtail"
 
   data-processing-service:
     build:
@@ -154,6 +158,8 @@ services:
         condition: service_healthy
       nats:
         condition: service_started
+    labels:
+      logging: "promtail"
 
   # Остальные сервисы без изменений (только обновим NATS_URL)
   notification-service:
@@ -191,6 +197,8 @@ services:
         condition: service_started
       nats:
         condition: service_started
+    labels:
+      logging: "promtail"
 
   api-gateway-service:
     build:
@@ -225,6 +233,8 @@ services:
         condition: service_started
       nats:
         condition: service_started
+    labels:
+      logging: "promtail"
 
   data-ingestion-service:
     build:
@@ -257,6 +267,8 @@ services:
         condition: service_started
       data-processing-service:
         condition: service_started
+    labels:
+      logging: "promtail"
 
   # Без изменений
   postgres-auth:
