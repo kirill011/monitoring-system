@@ -91,6 +91,8 @@ services:
         condition: service_started
       odyssey-auth:
         condition: service_healthy
+      promtail: 
+        condition: service_started
     labels:
       logging: "promtail"
 
@@ -125,6 +127,8 @@ services:
         condition: service_healthy
       nats: 
         condition: service_started
+      promtail: 
+        condition: service_started
     labels:
       logging: "promtail"
 
@@ -157,6 +161,8 @@ services:
       odyssey-data-processing:
         condition: service_healthy
       nats:
+        condition: service_started
+      promtail: 
         condition: service_started
     labels:
       logging: "promtail"
@@ -197,6 +203,8 @@ services:
         condition: service_started
       nats:
         condition: service_started
+      promtail: 
+        condition: service_started
     labels:
       logging: "promtail"
 
@@ -233,6 +241,8 @@ services:
         condition: service_started
       nats:
         condition: service_started
+      promtail: 
+        condition: service_started
     labels:
       logging: "promtail"
 
@@ -266,6 +276,8 @@ services:
       nats:
         condition: service_started
       data-processing-service:
+        condition: service_started
+      promtail: 
         condition: service_started
     labels:
       logging: "promtail"
@@ -388,6 +400,9 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers
     command:
       - "-config.file=/etc/promtail/promtail-config.yml"
+    depends_on:
+      loki: 
+        condition: service_started
 
 volumes:
   postgres-auth-db:
