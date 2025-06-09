@@ -138,8 +138,6 @@ services:
       dockerfile: Dockerfile
     stop_signal: SIGINT
     stop_grace_period: 10s
-    ports:
-      - 13694:13694
     volumes:
       - .:/app/data-processing-service
     networks:
