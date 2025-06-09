@@ -357,7 +357,7 @@ services:
       - nats
   postgres-auth-exporter:
     command: '--no-collector.stat_bgwriter'
-    image: prometheuscommunity/postgres-exporter:v0.11.1
+    image: prometheuscommunity/postgres-exporter:@latest
     environment:
       DATA_SOURCE_URI: "postgres-auth:5434/postgres?sslmode=disable"
       DATA_SOURCE_USER: postgres
@@ -374,7 +374,7 @@ services:
 
   postgres-device-management-exporter:
     command: '--no-collector.stat_bgwriter'
-    image: prometheuscommunity/postgres-exporter:v0.11.1
+    image: prometheuscommunity/postgres-exporter:@latest
     environment:
       DATA_SOURCE_URI: "postgres-device-management:5435/postgres?sslmode=disable"
       DATA_SOURCE_USER: postgres
@@ -390,7 +390,7 @@ services:
       - postgres-device-management
   postgres-data-processing-exporter:
     command: '--no-collector.stat_bgwriter'
-    image: prometheuscommunity/postgres-exporter:v0.11.1
+    image: prometheuscommunity/postgres-exporter:@latest
     environment:
       DATA_SOURCE_URI: "postgres-data-processing:5436/postgres?sslmode=disable"
       DATA_SOURCE_USER: postgres
