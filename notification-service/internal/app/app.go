@@ -22,7 +22,7 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		LogPath:     cfg.Logger.LogPath,
 	})
 
-	nats, err := nats.NewNats(cfg.Nats.URL)
+	nats, err := nats.NewNats(cfg.Nats.URL, log)
 	if err != nil {
 		log.Fatal(fmt.Errorf("nats.NewNats: %w", err).Error())
 	}
