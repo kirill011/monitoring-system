@@ -163,7 +163,6 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 	if err := n.natsConn.Publish(sendNotifySubject, binaryResp); err != nil {
 		n.log.Error("n.natsConn.Publish", zap.Error(err))
 		return
-
 	}
 }
 

@@ -406,10 +406,13 @@ services:
 
   nats:
     image: nats
+    command: --js -p 4222 -m 8222
     ports:
       - 4222:4222
     networks:
       - nats
+    volumes:
+    - ./jetstream-cluster/n1:/data
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
