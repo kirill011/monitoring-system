@@ -42,6 +42,7 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	listeners := natslisteners.NewListener(natslisteners.Config{
 		NatsConn:   nats.NatsConn,
+		Js:         nats.Js,
 		Log:        log,
 		Timeout:    cfg.Nats.Timeout,
 		SMTPSender: smtpsender,
