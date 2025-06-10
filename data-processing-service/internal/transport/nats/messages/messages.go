@@ -55,10 +55,11 @@ func NewListener(cfg Config) *NatsListeners {
 }
 
 func (n *NatsListeners) Listen() error {
-	_, err := n.natsConn.QueueSubscribe(saveMessageSubject, dataProcessingQueue, n.createHandler)
+	msgSub, err := n.natsConn.QueueSubscribe(saveMessageSubject, dataProcessingQueue, n.createHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+saveMessageSubject+"): %w", err)
 	}
+	msgSub.SetPendingLimits(-1, -1)
 
 	_, err = n.natsConn.QueueSubscribe(devicesUpdatedSubject, dataProcessingQueue, n.updateDevicesHandler)
 	if err != nil {
