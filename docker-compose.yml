@@ -119,7 +119,7 @@ services:
       SERVER_ADDR: :13692
       SERVER_LOG_QUERYS: "false"
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:8222
+      NATS_URL: nats:4222
     depends_on:
       auth-service:
         condition: service_started
@@ -151,7 +151,7 @@ services:
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: dataprocessing
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:8222
+      NATS_URL: nats:4222
       SERVICE_NOTIFICATION_PERIOD: 5m
       NATS_TIMEOUT: 30m
     depends_on:
@@ -186,7 +186,7 @@ services:
       LOG_SERVICE_NAME: notification-service
       LOG_PATH: /var/log/notification-service
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:8222
+      NATS_URL: nats:4222
       NATS_TIMEOUT: 30m
       SMTP_HOST: smtp.freesmtpservers.com
       SMTP_PORT: 25
@@ -230,7 +230,7 @@ services:
       SERVER_TOKEN_LIFE_TIME: 3h
       SERVER_LOG_QUERYS: "false"
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:8222
+      NATS_URL: nats:4222
       NATS_TIMEOUT: 30m
 
     depends_on:
@@ -264,7 +264,7 @@ services:
       LOG_SERVICE_NAME: data-ingestion-service
       LOG_PATH: /var/log/data-ingestion-service
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:8222
+      NATS_URL: nats:4222
       NATS_TIMEOUT: 1s
       SERVER_ADDR: :13695
       SERVER_LOG_QUERYS: "false"
