@@ -415,6 +415,8 @@ services:
     - 8222:8222
     volumes:
     - ./jetstream-cluster/n1:/data
+    networks:
+      - nats
 
   prometheus-nats-exporter:
     image: natsio/prometheus-nats-exporter:latest
