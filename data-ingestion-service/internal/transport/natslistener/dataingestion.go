@@ -90,7 +90,7 @@ func (n *NatsListeners) PublishSaveMessage(message models.Message) error {
 
 	_, err = n.js.Publish(saveMessageSubject, binaryMessage)
 	if err != nil {
-		return fmt.Errorf("js.Request: %w", err)
+		return fmt.Errorf("js.Publish: %w", err)
 	}
 
 	return nil
