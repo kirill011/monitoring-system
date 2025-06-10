@@ -423,6 +423,11 @@ services:
     command: "-connz -varz -channelz -serverz -subz -healthz -routez http://localhost:4222"
     ports:
       - "7777:7777"
+    depends_on:
+      nats:
+        condition: service_started
+    networks:
+      - nats
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     volumes:
