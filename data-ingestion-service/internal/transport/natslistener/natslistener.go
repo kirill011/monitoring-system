@@ -10,6 +10,7 @@ import (
 
 type NatsListeners struct {
 	natsConn *nats.Conn
+	js       nats.JetStreamContext
 	log      *zap.Logger
 	timeout  time.Duration
 
@@ -20,6 +21,7 @@ type Config struct {
 	NatsConn *nats.Conn
 	Log      *zap.Logger
 	Timeout  time.Duration
+	Js       nats.JetStreamContext
 
 	DevicesService services.DeviceService
 }
@@ -28,6 +30,7 @@ func NewListener(cfg Config) *NatsListeners {
 	return &NatsListeners{
 		natsConn:       cfg.NatsConn,
 		log:            cfg.Log,
+		js:             cfg.Js,
 		timeout:        cfg.Timeout,
 		devicesService: cfg.DevicesService,
 	}

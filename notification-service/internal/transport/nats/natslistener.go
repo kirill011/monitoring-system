@@ -13,6 +13,7 @@ type NatsListeners struct {
 	natsConn *nats.Conn
 	log      *zap.Logger
 	timeout  time.Duration
+	js       nats.JetStreamContext
 
 	smtpSender smtpsender.SMTPSender
 	httpSender httpsender.HTTPSender
@@ -22,6 +23,7 @@ type Config struct {
 	NatsConn *nats.Conn
 	Log      *zap.Logger
 	Timeout  time.Duration
+	Js       nats.JetStreamContext
 
 	SMTPSender smtpsender.SMTPSender
 	HTTPSender httpsender.HTTPSender
@@ -30,6 +32,7 @@ type Config struct {
 func NewListener(cfg Config) *NatsListeners {
 	return &NatsListeners{
 		natsConn:   cfg.NatsConn,
+		js:         cfg.Js,
 		log:        cfg.Log,
 		timeout:    cfg.Timeout,
 		smtpSender: cfg.SMTPSender,

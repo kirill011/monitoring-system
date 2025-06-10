@@ -61,6 +61,7 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	messagesListeners := messagelisteners.NewListener(messagelisteners.Config{
 		NatsConn:        nats.NatsConn,
+		Js:              nats.Js,
 		MessagesService: messagesService,
 		Timeout:         cfg.Nats.Timeout,
 		Log:             log,

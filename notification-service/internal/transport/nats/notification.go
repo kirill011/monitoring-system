@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	sendNotifySubject = "notify.send"
+	sendNotifySubject = "monitoring.notify.send"
 	notifycationQueue = "notification"
 
 	getResponsibleSubject = "devices.get_responsible"
@@ -25,9 +25,9 @@ const (
 )
 
 func (n *NatsListeners) listen() error {
-	_, err := n.natsConn.QueueSubscribe(sendNotifySubject, notifycationQueue, n.sendNotifyHandler)
+	_, err := n.js.QueueSubscribe(sendNotifySubject, notifycationQueue, n.sendNotifyHandler)
 	if err != nil {
-		return fmt.Errorf("n.natsConn.Subscribe("+sendNotifySubject+"): %w", err)
+		return fmt.Errorf("n.js.Subscribe("+sendNotifySubject+"): %w", err)
 	}
 
 	return nil

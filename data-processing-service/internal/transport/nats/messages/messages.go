@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	saveMessageSubject = "msg.save"
-	sendNotifySubject  = "notify.send"
+	saveMessageSubject = "monitoring.msg.save"
+	sendNotifySubject  = "monitoring.notify.send"
 
 	readDevicesSubject    = "devices.read"
 	devicesUpdatedSubject = "devices.updated"
@@ -33,6 +33,7 @@ const (
 
 type NatsListeners struct {
 	natsConn        *nats.Conn
+	js              nats.JetStreamContext
 	messagesService services.Messages
 	timeout         time.Duration
 	log             *zap.Logger
@@ -43,11 +44,13 @@ type Config struct {
 	MessagesService services.Messages
 	Timeout         time.Duration
 	Log             *zap.Logger
+	Js              nats.JetStreamContext
 }
 
 func NewListener(cfg Config) *NatsListeners {
 	return &NatsListeners{
 		natsConn:        cfg.NatsConn,
+		js:              cfg.Js,
 		messagesService: cfg.MessagesService,
 		log:             cfg.Log,
 		timeout:         cfg.Timeout,
@@ -55,11 +58,16 @@ func NewListener(cfg Config) *NatsListeners {
 }
 
 func (n *NatsListeners) Listen() error {
-	msgSub, err := n.natsConn.QueueSubscribe(saveMessageSubject, dataProcessingQueue, n.createHandler)
+	n.js.AddStream(
+		&nats.StreamConfig{
+			Name:     "monitoring",
+			Subjects: []string{saveMessageSubject, sendNotifySubject},
+		},
+	)
+	_, err := n.js.QueueSubscribe(saveMessageSubject, dataProcessingQueue, n.createHandler)
 	if err != nil {
-		return fmt.Errorf("n.natsConn.Subscribe("+saveMessageSubject+"): %w", err)
+		return fmt.Errorf("n.js.Subscribe("+saveMessageSubject+"): %w", err)
 	}
-	msgSub.SetPendingLimits(-1, 1024*1024*1000)
 
 	_, err = n.natsConn.QueueSubscribe(devicesUpdatedSubject, dataProcessingQueue, n.updateDevicesHandler)
 	if err != nil {
@@ -161,7 +169,7 @@ func (n *NatsListeners) createHandler(msg *nats.Msg) {
 		return
 	}
 
-	if err := n.natsConn.Publish(sendNotifySubject, binaryResp); err != nil {
+	if _, err := n.js.Publish(sendNotifySubject, binaryResp); err != nil {
 		n.log.Error("n.natsConn.Publish", zap.Error(err))
 		return
 	}

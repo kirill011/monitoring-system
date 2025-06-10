@@ -10,6 +10,7 @@ import (
 
 type Nats struct {
 	NatsConn *nats.Conn
+	Js       nats.JetStreamContext
 	log      *zap.Logger
 }
 
@@ -21,6 +22,11 @@ func NewNats(natsConnString string, log *zap.Logger) (*Nats, error) {
 	natsConn.NatsConn, err = nats.Connect(natsConnString, nats.ErrorHandler(natsConn.natsErrHandler))
 	if err != nil {
 		return nil, fmt.Errorf("nats.Connect: %w", err)
+	}
+
+	natsConn.Js, err = natsConn.NatsConn.JetStream()
+	if err != nil {
+		return nil, fmt.Errorf("natsConn.JetStream(): %w", err)
 	}
 
 	return natsConn, nil

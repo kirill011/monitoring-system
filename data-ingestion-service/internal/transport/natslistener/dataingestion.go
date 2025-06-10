@@ -18,7 +18,7 @@ const (
 	devicesUpdatedSubject = "devices.updated"
 	readDevicesSubject    = "devices.read"
 
-	saveMessageSubject = "msg.save"
+	saveMessageSubject = "monitoring.msg.save"
 )
 
 func (n *NatsListeners) listen() error {
@@ -88,9 +88,9 @@ func (n *NatsListeners) PublishSaveMessage(message models.Message) error {
 		return fmt.Errorf("proto.Marshal: %w", err)
 	}
 
-	err = n.natsConn.Publish(saveMessageSubject, binaryMessage)
+	_, err = n.js.Publish(saveMessageSubject, binaryMessage)
 	if err != nil {
-		return fmt.Errorf("natsConn.Request: %w", err)
+		return fmt.Errorf("js.Request: %w", err)
 	}
 
 	return nil
