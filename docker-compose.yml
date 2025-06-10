@@ -420,7 +420,7 @@ services:
 
   prometheus-nats-exporter:
     image: natsio/prometheus-nats-exporter:latest
-    command: "-connz -varz -channelz -serverz -subz -healthz -routez http://host.docker.internal:8222"
+    command: "-connz -varz -channelz -serverz -subz -healthz -routez http://localhost:4222"
     ports:
       - "7777:7777"
   cadvisor:
