@@ -420,7 +420,7 @@ services:
 
   prometheus-nats-exporter:
     image: natsio/prometheus-nats-exporter:latest
-    command: "-connz -varz -subz -healthz -routez http://localhost:4222"
+    command: "-connz -varz -subz -healthz -routez http://localhost:8222"
     ports:
       - "7777:7777"
     depends_on:
