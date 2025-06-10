@@ -142,6 +142,7 @@ services:
       - .:/app/data-processing-service
     networks:
       - nats
+    restart: unless-stopped
     environment:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: data-processing-service

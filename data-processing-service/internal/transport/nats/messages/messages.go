@@ -59,7 +59,7 @@ func (n *NatsListeners) Listen() error {
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+saveMessageSubject+"): %w", err)
 	}
-	msgSub.SetPendingLimits(-1, -1)
+	msgSub.SetPendingLimits(-1, 1024*1024*1000)
 
 	_, err = n.natsConn.QueueSubscribe(devicesUpdatedSubject, dataProcessingQueue, n.updateDevicesHandler)
 	if err != nil {
