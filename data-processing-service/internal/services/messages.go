@@ -214,7 +214,7 @@ type handleMessageResponse struct {
 
 func (ms *MessagesService) handleMessage(message models.Message) (handleMessageResponse, error) {
 	for _, tag := range tags[message.DeviceId] {
-		finded := tag.CompiledRegexp.FindAllString(message.Message, -1)
+		finded := tag.CompiledRegexp.FindStringSubmatch(message.Message)
 		if len(finded) == 0 {
 			continue
 		}
