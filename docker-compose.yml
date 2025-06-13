@@ -192,8 +192,8 @@ services:
       SMTP_PORT: 25
       SMTP_USER: 123
       SMTP_PASSWORD: 321
-      HTTP_HOST: localhost
-      HTTP_PORT: 1234
+      HTTP_HOST: 195.122.250.187
+      HTTP_PORT: 12345
       HTTP_ENDPOINT: /email_getter
     depends_on:
       auth-service:
