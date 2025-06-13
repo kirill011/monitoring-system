@@ -100,7 +100,7 @@ func (r devicesRepo) Create(opts models.Device) (models.Device, error) {
 	}()
 
 	if !rows.Next() {
-		return models.Device{}, repo.ErrNotFound
+		return models.Device{}, repo.ErrDeviceNotFound
 	}
 	var device models.Device
 	err = rows.StructScan(&device)
@@ -200,7 +200,7 @@ func (r devicesRepo) GetResponsible(ctx context.Context, deviceID int32) ([]int3
 	defer rows.Close()
 
 	if !rows.Next() {
-		return nil, repo.ErrNotFound
+		return nil, repo.ErrDeviceNotFound
 	}
 
 	err = rows.Scan(&responsibleIds)
