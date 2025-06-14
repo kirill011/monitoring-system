@@ -19,7 +19,7 @@ type NatsListeners struct {
 	smtpSender smtpsender.SMTPSender
 	httpSender httpsender.HTTPSender
 
-	notificationService services.NotificationService
+	notificationService *services.NotificationService
 }
 
 type Config struct {
@@ -31,7 +31,7 @@ type Config struct {
 	SMTPSender smtpsender.SMTPSender
 	HTTPSender httpsender.HTTPSender
 
-	NotificationService services.NotificationService
+	NotificationService *services.NotificationService
 }
 
 func NewListener(cfg Config) *NatsListeners {

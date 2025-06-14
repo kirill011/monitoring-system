@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"notification-service/config"
+	"notification-service/internal/services"
 	httpsender "notification-service/internal/transport/http"
 	natslisteners "notification-service/internal/transport/nats"
 	smtpsender "notification-service/internal/transport/smtp"
@@ -27,6 +28,8 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		log.Fatal(fmt.Errorf("nats.NewNats: %w", err).Error())
 	}
 
+	notificationService := services.NewNotificationService()
+
 	smtpsender := smtpsender.New(smtpsender.Config{
 		Host:     cfg.SMTP.Host,
 		Port:     cfg.SMTP.Port,
@@ -41,12 +44,13 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 	})
 
 	listeners := natslisteners.NewListener(natslisteners.Config{
-		NatsConn:   nats.NatsConn,
-		Js:         nats.Js,
-		Log:        log,
-		Timeout:    cfg.Nats.Timeout,
-		SMTPSender: smtpsender,
-		HTTPSender: httpsender,
+		NatsConn:            nats.NatsConn,
+		Js:                  nats.Js,
+		Log:                 log,
+		Timeout:             cfg.Nats.Timeout,
+		SMTPSender:          smtpsender,
+		HTTPSender:          httpsender,
+		NotificationService: notificationService,
 	})
 
 	go func() {
