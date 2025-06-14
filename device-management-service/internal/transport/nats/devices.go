@@ -75,7 +75,7 @@ func (n *NatsListeners) getResponsibleHandler(msg *nats.Msg) {
 	}
 
 	getResposibleResp := pbdevices.GetResponsibleResp{
-		ResposiblesByDeviceID: make([]*pbdevices.ResposiblesByDeviceID, len(responsibles)),
+		ResposiblesByDeviceID: make([]*pbdevices.ResposiblesByDeviceID, 0),
 	}
 
 	for _, responsible := range responsibles {
