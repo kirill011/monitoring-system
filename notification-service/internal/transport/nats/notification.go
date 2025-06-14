@@ -138,12 +138,12 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 	// 	}
 	// }()
 
+	n.metrics.Inc()
+
 	err := n.httpSender.Send(&httpEmail)
 	if err != nil {
 		n.log.Error("n.httpSender.Send", zap.Error(err),
 			zap.Any("Email", email),
 		)
 	}
-
-	n.metrics.Inc()
 }
