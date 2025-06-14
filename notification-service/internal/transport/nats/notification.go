@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	sendNotifySubject = "monitoring.notify.send"
-	notifycationQueue = "notification"
+	sendNotifySubject   = "monitoring.notify.send"
+	notifycationQueue   = "notification"
+	sendedNotifySubject = "notify_sended"
 
 	devicesUpdated        = "devices.updated"
 	getResponsibleSubject = "devices.get_responsible"
@@ -40,7 +41,7 @@ func (n *NatsListeners) listen() error {
 		Subjects: []string{sendedMailSubject},
 	})
 
-	n.js.QueueSubscribe(sendedMailSubject, notifycationQueue, func(msg *nats.Msg) { n.log.Debug("msg", zap.Binary("msg", msg.Data)) })
+	n.js.QueueSubscribe(sendedMailSubject, sendedNotifySubject, func(msg *nats.Msg) { n.log.Debug("msg", zap.Binary("msg", msg.Data)) })
 
 	n.getResponsiblesHandler(nil)
 	return nil
