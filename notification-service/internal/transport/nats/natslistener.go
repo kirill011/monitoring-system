@@ -1,6 +1,7 @@
 package natslisteners
 
 import (
+	"notification-service/internal/services"
 	httpsender "notification-service/internal/transport/http"
 	smtpsender "notification-service/internal/transport/smtp"
 	"time"
@@ -17,6 +18,8 @@ type NatsListeners struct {
 
 	smtpSender smtpsender.SMTPSender
 	httpSender httpsender.HTTPSender
+
+	notificationService services.NotificationService
 }
 
 type Config struct {
@@ -27,16 +30,19 @@ type Config struct {
 
 	SMTPSender smtpsender.SMTPSender
 	HTTPSender httpsender.HTTPSender
+
+	NotificationService services.NotificationService
 }
 
 func NewListener(cfg Config) *NatsListeners {
 	return &NatsListeners{
-		natsConn:   cfg.NatsConn,
-		js:         cfg.Js,
-		log:        cfg.Log,
-		timeout:    cfg.Timeout,
-		smtpSender: cfg.SMTPSender,
-		httpSender: cfg.HTTPSender,
+		natsConn:            cfg.NatsConn,
+		js:                  cfg.Js,
+		log:                 cfg.Log,
+		timeout:             cfg.Timeout,
+		smtpSender:          cfg.SMTPSender,
+		httpSender:          cfg.HTTPSender,
+		notificationService: cfg.NotificationService,
 	}
 }
 

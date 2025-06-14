@@ -13,3 +13,8 @@ type UpdateDeviceOpts struct {
 type ReadDevicesResult struct {
 	Devices []models.Device
 }
+
+type GetResponsibleResult struct {
+	ID           int32                   `db:"id"`
+	Responsibles models.SqlJsonbIntArray `db:"responsibles"`
+}

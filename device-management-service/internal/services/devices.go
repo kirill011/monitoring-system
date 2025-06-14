@@ -6,6 +6,8 @@ import (
 
 	"device-management-service/internal/models"
 	"device-management-service/internal/repo"
+
+	"github.com/samber/lo"
 )
 
 type Devices interface {
@@ -13,7 +15,7 @@ type Devices interface {
 	Read(ctx context.Context) (ReadResult, error)
 	Update(ctx context.Context, params UpdateDeviceParams) error
 	Delete(ctx context.Context, deviceID int32) error
-	GetResponsible(ctx context.Context, deviceID int32) ([]int32, error)
+	GetResponsible(ctx context.Context) ([]GetResponsibleResult, error)
 }
 
 type DeviceService struct {
@@ -130,14 +132,21 @@ func (s *DeviceService) Delete(ctx context.Context, deviceID int32) error {
 	return nil
 }
 
-func (s *DeviceService) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
+type (
+	GetResponsibleResult struct {
+		Responsible []int32
+		Device      int32
+	}
+)
+
+func (s *DeviceService) GetResponsible(ctx context.Context) ([]GetResponsibleResult, error) {
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("s.repo.BeginTx: %w", err)
 	}
 	defer tx.Rollback()
 
-	ret, err := tx.GetResponsible(ctx, deviceID)
+	ret, err := tx.GetResponsible(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("tx.GetResponsible: %w", err)
 	}
@@ -147,5 +156,10 @@ func (s *DeviceService) GetResponsible(ctx context.Context, deviceID int32) ([]i
 		return nil, fmt.Errorf("tx.Commit: %w", err)
 	}
 
-	return ret, nil
+	return lo.Map(ret, func(r repo.GetResponsibleResult, _ int) GetResponsibleResult {
+		return GetResponsibleResult{
+			Responsible: r.Responsibles,
+			Device:      r.ID,
+		}
+	}), nil
 }

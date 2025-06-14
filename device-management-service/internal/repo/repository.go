@@ -14,5 +14,5 @@ type Devices interface {
 	Read(ctx context.Context) (ReadDevicesResult, error)
 	Update(ctx context.Context, opts UpdateDeviceOpts) error
 	Delete(ctx context.Context, id int32) error
-	GetResponsible(ctx context.Context, deviceID int32) ([]int32, error)
+	GetResponsible(ctx context.Context) ([]GetResponsibleResult, error)
 }

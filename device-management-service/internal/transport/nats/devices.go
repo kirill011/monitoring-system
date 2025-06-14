@@ -62,26 +62,10 @@ func (n *NatsListeners) PublishUpdateEvent() error {
 }
 
 func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
-	var getResposibleReq pbdevices.GetResponsibleReq
-	err := proto.Unmarshal(msg.Data, &getResposibleReq)
-	if err != nil {
-		n.log.Error("proto.Unmarshal",
-			zap.Error(err),
-			zap.Binary("Data", msg.Data),
-			zap.String("Subject", msg.Subject),
-		)
-
-		if err := n.natsConn.Publish(msg.Reply, nil); err != nil {
-			n.log.Error("n.natsConn.Publish", zap.Error(err))
-		}
-		return
-	}
-
-	responsibles, err := n.devicesService.GetResponsible(context.Background(), getResposibleReq.GetDeviceID())
+	responsibles, err := n.devicesService.GetResponsible(context.Background())
 	if err != nil {
 		n.log.Error("devicesService.GetResponsible",
 			zap.Error(err),
-			zap.Int32("DeviceID", getResposibleReq.GetDeviceID()),
 		)
 
 		if err := n.natsConn.Publish(msg.Reply, nil); err != nil {
@@ -91,8 +75,16 @@ func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
 	}
 
 	getResposibleResp := pbdevices.GetResponsibleResp{
-		ResponsibleID: responsibles,
+		ResposiblesByDeviceID: make([]*pbdevices.ResposiblesByDeviceID, len(responsibles)),
 	}
+
+	for _, responsible := range responsibles {
+		getResposibleResp.ResposiblesByDeviceID = append(getResposibleResp.ResposiblesByDeviceID, &pbdevices.ResposiblesByDeviceID{
+			DeviceID:      responsible.Device,
+			ResponsibleID: responsible.Responsible,
+		})
+	}
+
 	getResposibleRespBytes, err := proto.Marshal(&getResposibleResp)
 	if err != nil {
 		n.log.Error("proto.Marshal", zap.Error(err), zap.Any("variable", getResposibleRespBytes))

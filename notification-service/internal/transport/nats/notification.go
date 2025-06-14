@@ -17,6 +17,7 @@ const (
 	sendNotifySubject = "monitoring.notify.send"
 	notifycationQueue = "notification"
 
+	devicesUpdated        = "devices.updated"
 	getResponsibleSubject = "devices.get_responsible"
 	getEmailSubject       = "users.get_email"
 
@@ -29,38 +30,16 @@ func (n *NatsListeners) listen() error {
 	if err != nil {
 		return fmt.Errorf("n.js.Subscribe("+sendNotifySubject+"): %w", err)
 	}
+	_, err = n.natsConn.QueueSubscribe(devicesUpdated, notifycationQueue, n.getResponsiblesHandler)
 
+	n.getResponsiblesHandler(nil)
 	return nil
 }
 
-func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
-	// Get Notifycation
-	var notifycatioRequest pbnotification.SendNotifyReq
-
-	if err := proto.Unmarshal(msg.Data, &notifycatioRequest); err != nil {
-		n.log.Error("proto.Unmarshal",
-			zap.Error(err),
-			zap.Binary("Data", msg.Data),
-			zap.String("Subject", msg.Subject),
-		)
-		return
-	}
-
-	// Get Responsible
-	responsibleReq := pbdevices.GetResponsibleReq{
-		DeviceID: notifycatioRequest.DeviceID,
-	}
-
-	responsibleReqBytes, err := proto.Marshal(&responsibleReq)
-	if err != nil {
-		n.log.Error("proto.Marshal", zap.Error(err), zap.Any("variable", responsibleReq))
-		return
-	}
-
-	responsibleRespMsg, err := n.natsConn.Request(getResponsibleSubject, responsibleReqBytes, n.timeout)
+func (n *NatsListeners) getResponsiblesHandler(msg *nats.Msg) {
+	responsibleRespMsg, err := n.natsConn.Request(getResponsibleSubject, nil, n.timeout)
 	if err != nil {
 		n.log.Error("n.natsConn.Request", zap.Error(err),
-			zap.Binary("Data", responsibleReqBytes),
 			zap.String("Subject", getResponsibleSubject),
 		)
 		return
@@ -76,48 +55,60 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 		return
 	}
 
-	if len(responsibleResp.GetResponsibleID()) == 0 {
-		n.log.Warn("responsible not found",
-			zap.Any("responsibleID", responsibleResp.GetResponsibleID()),
-			zap.Int32("DeviceID", notifycatioRequest.DeviceID),
-		)
-		return
+	var resposiblesByDeviceID map[int32][]string
+	for _, responsibleResp := range responsibleResp.GetResposiblesByDeviceID() {
+		emailReq := pbusers.GetEmailReq{
+			UserID: responsibleResp.GetResponsibleID(),
+		}
+
+		emailReqBytes, err := proto.Marshal(&emailReq)
+		if err != nil {
+			n.log.Error("proto.Marshal", zap.Error(err), zap.Any("variable", emailReq))
+			return
+		}
+
+		emailRespMsg, err := n.natsConn.Request(getEmailSubject, emailReqBytes, n.timeout)
+		if err != nil {
+			n.log.Error("n.natsConn.Request", zap.Error(err),
+				zap.Binary("Data", emailReqBytes),
+				zap.String("Subject", getEmailSubject),
+			)
+			return
+		}
+
+		var emailResp pbusers.GetEmailResp
+		if err := proto.Unmarshal(emailRespMsg.Data, &emailResp); err != nil {
+			n.log.Error("proto.Unmarshal",
+				zap.Error(err),
+				zap.Binary("Data", msg.Data),
+				zap.String("Subject", getEmailSubject),
+			)
+			return
+		}
+
+		if len(emailResp.GetEmail()) == 0 {
+			n.log.Warn("responsible not found",
+				zap.Any("responsibleID", emailResp.GetEmail()),
+				zap.Int32("DeviceID", responsibleResp.DeviceID),
+			)
+			return
+		}
+		resposiblesByDeviceID[responsibleResp.DeviceID] = emailResp.GetEmail()
 	}
 
-	// Get Email
-	emailReq := pbusers.GetEmailReq{
-		UserID: responsibleResp.GetResponsibleID(),
-	}
+	n.notificationService.SetResponsiblesByDeviceId(resposiblesByDeviceID)
 
-	emailReqBytes, err := proto.Marshal(&emailReq)
-	if err != nil {
-		n.log.Error("proto.Marshal", zap.Error(err), zap.Any("variable", emailReq))
-		return
-	}
+}
 
-	emailRespMsg, err := n.natsConn.Request(getEmailSubject, emailReqBytes, n.timeout)
-	if err != nil {
-		n.log.Error("n.natsConn.Request", zap.Error(err),
-			zap.Binary("Data", emailReqBytes),
-			zap.String("Subject", getEmailSubject),
-		)
-		return
-	}
+func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
+	// Get Notifycation
+	var notifycatioRequest pbnotification.SendNotifyReq
 
-	var emailResp pbusers.GetEmailResp
-	if err := proto.Unmarshal(emailRespMsg.Data, &emailResp); err != nil {
+	if err := proto.Unmarshal(msg.Data, &notifycatioRequest); err != nil {
 		n.log.Error("proto.Unmarshal",
 			zap.Error(err),
 			zap.Binary("Data", msg.Data),
-			zap.String("Subject", getEmailSubject),
-		)
-		return
-	}
-
-	if len(emailResp.GetEmail()) == 0 {
-		n.log.Warn("responsible not found",
-			zap.Any("responsibleID", emailResp.GetEmail()),
-			zap.Int32("DeviceID", notifycatioRequest.DeviceID),
+			zap.String("Subject", msg.Subject),
 		)
 		return
 	}
@@ -126,20 +117,20 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 		Subject: notifycatioRequest.GetSubject(),
 		Body:    notifycatioRequest.Text,
 		From:    defaultEmail,
-		To:      emailResp.GetEmail(),
+		To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
 	}
 
 	httpEmail := httpsender.Email{
 		Subject: notifycatioRequest.GetSubject(),
 		Body:    notifycatioRequest.Text,
 		From:    defaultEmail,
-		To:      emailResp.GetEmail(),
+		To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
 	}
 
 	n.log.Debug("send notification", zap.Any("email", email))
 
 	// send notification
-	err = n.smtpSender.Send(&email)
+	err := n.smtpSender.Send(&email)
 	if err != nil {
 		n.log.Error("n.smtpSender.Send", zap.Error(err),
 			zap.Any("Email", email),

@@ -182,31 +182,17 @@ func (r devicesRepo) Delete(ctx context.Context, id int32) error {
 }
 
 const devicesRepoQueryGetResponsible = `
-select responsible from devices
-where id = :id and deleted_at is null;
+select id, responsible from devices
+where deleted_at is null;
 `
 
-func (r devicesRepo) GetResponsible(ctx context.Context, deviceID int32) ([]int32, error) {
-	var responsibleIds models.SqlJsonbIntArray
+func (r devicesRepo) GetResponsible(ctx context.Context) ([]repo.GetResponsibleResult, error) {
+	var responsibles []repo.GetResponsibleResult
 
-	rows, err := r.tx.NamedQuery(devicesRepoQueryGetResponsible,
-		map[string]any{
-			"id": deviceID,
-		},
-	)
+	err := r.tx.Select(&responsibles, devicesRepoQueryGetResponsible)
 	if err != nil {
-		return nil, fmt.Errorf("r.tx.NamedQuery: %w", err)
-	}
-	defer rows.Close()
-
-	if !rows.Next() {
-		return nil, repo.ErrDeviceNotFound
+		return nil, fmt.Errorf("r.tx.Select: %w", err)
 	}
 
-	err = rows.Scan(&responsibleIds)
-	if err != nil {
-		return nil, fmt.Errorf("rows.Scan: %w", err)
-	}
-
-	return responsibleIds, nil
+	return responsibles, nil
 }

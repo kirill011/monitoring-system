@@ -4,10 +4,11 @@ option go_package = ".;pbdevices";
 
 package pbmessage;
 
-message GetResponsibleReq {
-    int32 DeviceID = 1;
+message ResposiblesByDeviceID{
+    repeated int32 ResponsibleID = 1;
+    int32 DeviceID = 2;
 }
 
 message GetResponsibleResp {
-    repeated int32 ResponsibleID = 1;
+    repeated ResposiblesByDeviceID ResposiblesByDeviceID = 1;
 }

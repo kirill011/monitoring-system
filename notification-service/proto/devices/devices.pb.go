@@ -21,27 +21,28 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GetResponsibleReq struct {
+type ResposiblesByDeviceID struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceID      int32                  `protobuf:"varint,1,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
+	ResponsibleID []int32                `protobuf:"varint,1,rep,packed,name=ResponsibleID,proto3" json:"ResponsibleID,omitempty"`
+	DeviceID      int32                  `protobuf:"varint,2,opt,name=DeviceID,proto3" json:"DeviceID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetResponsibleReq) Reset() {
-	*x = GetResponsibleReq{}
+func (x *ResposiblesByDeviceID) Reset() {
+	*x = ResposiblesByDeviceID{}
 	mi := &file_devices_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetResponsibleReq) String() string {
+func (x *ResposiblesByDeviceID) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetResponsibleReq) ProtoMessage() {}
+func (*ResposiblesByDeviceID) ProtoMessage() {}
 
-func (x *GetResponsibleReq) ProtoReflect() protoreflect.Message {
+func (x *ResposiblesByDeviceID) ProtoReflect() protoreflect.Message {
 	mi := &file_devices_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -53,12 +54,19 @@ func (x *GetResponsibleReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetResponsibleReq.ProtoReflect.Descriptor instead.
-func (*GetResponsibleReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use ResposiblesByDeviceID.ProtoReflect.Descriptor instead.
+func (*ResposiblesByDeviceID) Descriptor() ([]byte, []int) {
 	return file_devices_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetResponsibleReq) GetDeviceID() int32 {
+func (x *ResposiblesByDeviceID) GetResponsibleID() []int32 {
+	if x != nil {
+		return x.ResponsibleID
+	}
+	return nil
+}
+
+func (x *ResposiblesByDeviceID) GetDeviceID() int32 {
 	if x != nil {
 		return x.DeviceID
 	}
@@ -66,10 +74,10 @@ func (x *GetResponsibleReq) GetDeviceID() int32 {
 }
 
 type GetResponsibleResp struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ResponsibleID []int32                `protobuf:"varint,1,rep,packed,name=ResponsibleID,proto3" json:"ResponsibleID,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState   `protogen:"open.v1"`
+	ResposiblesByDeviceID []*ResposiblesByDeviceID `protobuf:"bytes,1,rep,name=ResposiblesByDeviceID,proto3" json:"ResposiblesByDeviceID,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *GetResponsibleResp) Reset() {
@@ -102,9 +110,9 @@ func (*GetResponsibleResp) Descriptor() ([]byte, []int) {
 	return file_devices_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetResponsibleResp) GetResponsibleID() []int32 {
+func (x *GetResponsibleResp) GetResposiblesByDeviceID() []*ResposiblesByDeviceID {
 	if x != nil {
-		return x.ResponsibleID
+		return x.ResposiblesByDeviceID
 	}
 	return nil
 }
@@ -113,11 +121,12 @@ var File_devices_proto protoreflect.FileDescriptor
 
 const file_devices_proto_rawDesc = "" +
 	"\n" +
-	"\rdevices.proto\x12\tpbmessage\"/\n" +
-	"\x11GetResponsibleReq\x12\x1a\n" +
-	"\bDeviceID\x18\x01 \x01(\x05R\bDeviceID\":\n" +
-	"\x12GetResponsibleResp\x12$\n" +
-	"\rResponsibleID\x18\x01 \x03(\x05R\rResponsibleIDB\rZ\v.;pbdevicesb\x06proto3"
+	"\rdevices.proto\x12\tpbmessage\"Y\n" +
+	"\x15ResposiblesByDeviceID\x12$\n" +
+	"\rResponsibleID\x18\x01 \x03(\x05R\rResponsibleID\x12\x1a\n" +
+	"\bDeviceID\x18\x02 \x01(\x05R\bDeviceID\"l\n" +
+	"\x12GetResponsibleResp\x12V\n" +
+	"\x15ResposiblesByDeviceID\x18\x01 \x03(\v2 .pbmessage.ResposiblesByDeviceIDR\x15ResposiblesByDeviceIDB\rZ\v.;pbdevicesb\x06proto3"
 
 var (
 	file_devices_proto_rawDescOnce sync.Once
@@ -133,15 +142,16 @@ func file_devices_proto_rawDescGZIP() []byte {
 
 var file_devices_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_devices_proto_goTypes = []any{
-	(*GetResponsibleReq)(nil),  // 0: pbmessage.GetResponsibleReq
-	(*GetResponsibleResp)(nil), // 1: pbmessage.GetResponsibleResp
+	(*ResposiblesByDeviceID)(nil), // 0: pbmessage.ResposiblesByDeviceID
+	(*GetResponsibleResp)(nil),    // 1: pbmessage.GetResponsibleResp
 }
 var file_devices_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: pbmessage.GetResponsibleResp.ResposiblesByDeviceID:type_name -> pbmessage.ResposiblesByDeviceID
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_devices_proto_init() }
