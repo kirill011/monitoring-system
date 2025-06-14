@@ -64,7 +64,10 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		http.ListenAndServe(":9081", nil)
+		if err := http.ListenAndServe(":9081", nil); err != nil {
+			log.Error(fmt.Errorf("error occurred while running http server: %w", err).Error())
+			stop()
+		}
 	}()
 
 	log.Info("Running NATs listener")

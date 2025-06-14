@@ -66,7 +66,10 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	go func() {
 		httpbase.Handle("/metrics", promhttp.Handler())
-		httpbase.ListenAndServe(":9082", nil)
+		if err := httpbase.ListenAndServe(":9082", nil); err != nil {
+			log.Error(fmt.Errorf("error occurred while running http server: %w", err).Error())
+			stop()
+		}
 	}()
 
 	log.Info("Running HTTP server")
