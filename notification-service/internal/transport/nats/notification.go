@@ -130,14 +130,14 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 	n.log.Debug("send notification", zap.Any("email", email))
 
 	// send notification
-	go func() {
-		err := n.smtpSender.Send(&email)
-		if err != nil {
-			n.log.Error("n.smtpSender.Send", zap.Error(err),
-				zap.Any("Email", email),
-			)
-		}
-	}()
+	// go func() {
+	// 	err := n.smtpSender.Send(&email)
+	// 	if err != nil {
+	// 		n.log.Error("n.smtpSender.Send", zap.Error(err),
+	// 			zap.Any("Email", email),
+	// 		)
+	// 	}
+	// }()
 
 	go func() {
 		err := n.httpSender.Send(&httpEmail)
