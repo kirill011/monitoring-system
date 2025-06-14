@@ -1,1 +1,4 @@
 /.VSCodeCounter
+/jetstream-cluster
+/device-management-service
+device-management-service/.env

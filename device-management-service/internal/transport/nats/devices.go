@@ -29,7 +29,7 @@ const (
 )
 
 func (n *NatsListeners) listen() error {
-	_, err := n.natsConn.QueueSubscribe(getResponsibleSubject, deviceManagementQueue, n.gerResponsibleHandler)
+	_, err := n.natsConn.QueueSubscribe(getResponsibleSubject, deviceManagementQueue, n.getResponsibleHandler)
 	if err != nil {
 		return fmt.Errorf("n.natsConn.Subscribe("+getResponsibleSubject+"): %w", err)
 	}
@@ -61,7 +61,7 @@ func (n *NatsListeners) PublishUpdateEvent() error {
 	return n.natsConn.Publish(devicesUpdatedSubject, nil)
 }
 
-func (n *NatsListeners) gerResponsibleHandler(msg *nats.Msg) {
+func (n *NatsListeners) getResponsibleHandler(msg *nats.Msg) {
 	responsibles, err := n.devicesService.GetResponsible(context.Background())
 	if err != nil {
 		n.log.Error("devicesService.GetResponsible",

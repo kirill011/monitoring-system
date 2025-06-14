@@ -16,5 +16,5 @@ type ReadDevicesResult struct {
 
 type GetResponsibleResult struct {
 	ID           int32                   `db:"id"`
-	Responsibles models.SqlJsonbIntArray `db:"responsibles"`
+	Responsibles models.SqlJsonbIntArray `db:"responsible"`
 }
