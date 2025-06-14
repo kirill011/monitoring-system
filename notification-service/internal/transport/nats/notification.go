@@ -2,8 +2,6 @@ package natslisteners
 
 import (
 	"fmt"
-	httpsender "notification-service/internal/transport/http"
-	smtpsender "notification-service/internal/transport/smtp"
 	pbdevices "notification-service/proto/devices"
 	pbnotification "notification-service/proto/notification"
 	pbusers "notification-service/proto/users"
@@ -112,21 +110,21 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 		return
 	}
 
-	email := smtpsender.Email{
-		Subject: notifycatioRequest.GetSubject(),
-		Body:    notifycatioRequest.Text,
-		From:    defaultEmail,
-		To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
-	}
+	// email := smtpsender.Email{
+	// 	Subject: notifycatioRequest.GetSubject(),
+	// 	Body:    notifycatioRequest.Text,
+	// 	From:    defaultEmail,
+	// 	To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
+	// }
 
-	httpEmail := httpsender.Email{
-		Subject: notifycatioRequest.GetSubject(),
-		Body:    notifycatioRequest.Text,
-		From:    defaultEmail,
-		To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
-	}
+	// httpEmail := httpsender.Email{
+	// 	Subject: notifycatioRequest.GetSubject(),
+	// 	Body:    notifycatioRequest.Text,
+	// 	From:    defaultEmail,
+	// 	To:      n.notificationService.GetResposibles(notifycatioRequest.DeviceID),
+	// }
 
-	n.log.Debug("send notification", zap.Any("email", email))
+	// n.log.Debug("send notification", zap.Any("email", email))
 
 	// send notification
 	// go func() {
@@ -140,10 +138,10 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 
 	n.metrics.Inc()
 
-	err := n.httpSender.Send(&httpEmail)
-	if err != nil {
-		n.log.Error("n.httpSender.Send", zap.Error(err),
-			zap.Any("Email", email),
-		)
-	}
+	// err := n.httpSender.Send(&httpEmail)
+	// if err != nil {
+	// 	n.log.Error("n.httpSender.Send", zap.Error(err),
+	// 		zap.Any("Email", httpEmail),
+	// 	)
+	// }
 }
