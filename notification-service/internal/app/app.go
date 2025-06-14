@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	_ "net/http/pprof"
 	"notification-service/config"
 	"notification-service/internal/services"
 	httpsender "notification-service/internal/transport/http"
