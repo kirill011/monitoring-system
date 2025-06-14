@@ -175,6 +175,7 @@ services:
     stop_grace_period: 10s
     ports:
       - 13691:13691
+      - 9081:9081
     expose:
       - 13691
       - 9081
@@ -254,6 +255,7 @@ services:
     stop_grace_period: 10s
     ports:
       - 13695:13695
+      - 9082:9082
     expose:
       - 13695
       - 9082
