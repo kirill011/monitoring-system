@@ -55,7 +55,7 @@ func (n *NatsListeners) getResponsiblesHandler(msg *nats.Msg) {
 		return
 	}
 
-	var resposiblesByDeviceID map[int32][]string
+	resposiblesByDeviceID := make(map[int32][]string)
 	for _, responsibleResp := range responsibleResp.GetResposiblesByDeviceID() {
 		emailReq := pbusers.GetEmailReq{
 			UserID: responsibleResp.GetResponsibleID(),
