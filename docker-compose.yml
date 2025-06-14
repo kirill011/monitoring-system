@@ -155,8 +155,6 @@ services:
       SERVICE_NOTIFICATION_PERIOD: 5m
       NATS_TIMEOUT: 30m
     depends_on:
-      notification-service:
-        condition: service_started
       odyssey-data-processing:
         condition: service_healthy
       nats:
