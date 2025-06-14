@@ -256,7 +256,7 @@ services:
       - 13695:13695
     expose:
       - 13695
-      - 9080
+      - 9082
     volumes:
       - .:/app/data-ingestion-service
     networks:
