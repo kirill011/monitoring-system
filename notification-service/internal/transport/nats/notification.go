@@ -14,18 +14,14 @@ import (
 )
 
 const (
-	sendNotifySubject   = "monitoring.notify.send"
-	notifycationQueue   = "notification"
-	sendedNotifySubject = "notify_sended"
+	sendNotifySubject = "monitoring.notify.send"
+	notifycationQueue = "notification"
 
 	devicesUpdated        = "devices.updated"
 	getResponsibleSubject = "devices.get_responsible"
 	getEmailSubject       = "users.get_email"
-
-	sendedMailSubject = "sended_mail"
-
-	emailSubject = "PROBLEM"
-	defaultEmail = "noreply@monitoring.com"
+	emailSubject          = "PROBLEM"
+	defaultEmail          = "noreply@monitoring.com"
 )
 
 func (n *NatsListeners) listen() error {
@@ -34,14 +30,6 @@ func (n *NatsListeners) listen() error {
 		return fmt.Errorf("n.js.Subscribe("+sendNotifySubject+"): %w", err)
 	}
 	_, err = n.natsConn.QueueSubscribe(devicesUpdated, notifycationQueue, n.getResponsiblesHandler)
-
-	// mock
-	n.js.AddStream(&nats.StreamConfig{
-		Name:     "sended_mail",
-		Subjects: []string{sendedMailSubject},
-	})
-
-	n.js.QueueSubscribe(sendedMailSubject, sendedNotifySubject, func(msg *nats.Msg) { n.log.Debug("msg", zap.Binary("msg", msg.Data)) })
 
 	n.getResponsiblesHandler(nil)
 	return nil
@@ -159,10 +147,5 @@ func (n *NatsListeners) sendNotifyHandler(msg *nats.Msg) {
 		}
 	}()
 
-	_, err := n.js.Publish(sendedMailSubject, []byte(httpEmail.Body))
-	if err != nil {
-		n.log.Error("n.js.Publish", zap.Error(err),
-			zap.String("Subject", sendedMailSubject),
-		)
-	}
+	n.metrics.Inc()
 }

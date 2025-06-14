@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"notification-service/config"
 	"notification-service/internal/services"
@@ -13,6 +14,7 @@ import (
 	"notification-service/pkg/logger"
 	"notification-service/pkg/nats"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
 
@@ -58,6 +60,11 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 			log.Error(fmt.Errorf("error occurred while running NATs listeners: %w", err).Error())
 			stop()
 		}
+	}()
+
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":9081", nil)
 	}()
 
 	log.Info("Running NATs listener")

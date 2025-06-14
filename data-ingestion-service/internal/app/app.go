@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	httpbase "net/http"
 
 	"data-ingestion-service/config"
 	"data-ingestion-service/internal/services"
@@ -12,6 +13,7 @@ import (
 	"data-ingestion-service/pkg/logger"
 	"data-ingestion-service/pkg/nats"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
 
@@ -60,6 +62,11 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 			log.Error(fmt.Errorf("error occurred while running http server: %w", err).Error())
 			stop()
 		}
+	}()
+
+	go func() {
+		httpbase.Handle("/metrics", promhttp.Handler())
+		httpbase.ListenAndServe(":9081", nil)
 	}()
 
 	log.Info("Running HTTP server")

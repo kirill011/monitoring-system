@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/gofiber/fiber/v3"
 )
@@ -16,6 +17,7 @@ const (
 
 type messagesHandler struct {
 	natsHandlers *natslistener.NatsListeners
+	metrics      prometheus.Counter
 }
 
 type Config struct {
@@ -23,8 +25,18 @@ type Config struct {
 }
 
 func NewMessagesHandler(cfg *Config) *messagesHandler {
+	ingressRequests := prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "ingress_requests_total",
+			Help: "Total incoming requests",
+		},
+	)
+
+	prometheus.MustRegister(ingressRequests)
+
 	return &messagesHandler{
 		natsHandlers: cfg.NatsHandlers,
+		metrics:      ingressRequests,
 	}
 }
 
@@ -81,6 +93,8 @@ func (h *messagesHandler) sendMsg(ctx fiber.Ctx) error {
 			fmt.Errorf("json.Marshal: %w", err).Error(),
 		)
 	}
+
+	h.metrics.Inc()
 
 	if err = ctx.Status(fiber.StatusOK).Send(jsonResponse); err != nil {
 		return fiber.NewError(

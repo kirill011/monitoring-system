@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/nats-io/nats.go"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )
 
@@ -20,6 +21,7 @@ type NatsListeners struct {
 	httpSender httpsender.HTTPSender
 
 	notificationService *services.NotificationService
+	metrics             prometheus.Counter
 }
 
 type Config struct {
@@ -32,9 +34,20 @@ type Config struct {
 	HTTPSender httpsender.HTTPSender
 
 	NotificationService *services.NotificationService
+
+	Metrics prometheus.Counter
 }
 
 func NewListener(cfg Config) *NatsListeners {
+	egressResponses := prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "egress_responses_total",
+			Help: "Total async responses sent",
+		},
+	)
+
+	prometheus.MustRegister(egressResponses)
+
 	return &NatsListeners{
 		natsConn:            cfg.NatsConn,
 		js:                  cfg.Js,
@@ -43,6 +56,7 @@ func NewListener(cfg Config) *NatsListeners {
 		smtpSender:          cfg.SMTPSender,
 		httpSender:          cfg.HTTPSender,
 		notificationService: cfg.NotificationService,
+		metrics:             egressResponses,
 	}
 }
 
