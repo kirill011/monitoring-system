@@ -188,7 +188,7 @@ services:
       APP_SHUTDOWN_TIMEOUT: 30s
       NATS_URL: nats:4222
       NATS_TIMEOUT: 30m
-      SMTP_HOST: smtp.freesmtpservers.com
+      SMTP_HOST: 195.122.250.187
       SMTP_PORT: 25
       SMTP_USER: 123
       SMTP_PASSWORD: 321
