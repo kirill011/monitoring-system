@@ -155,6 +155,8 @@ services:
       SERVICE_NOTIFICATION_PERIOD: 5m
       NATS_TIMEOUT: 30m
     depends_on:
+      device-management-service:
+        condition: service_started
       odyssey-data-processing:
         condition: service_healthy
       nats:
