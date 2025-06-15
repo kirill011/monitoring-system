@@ -7,6 +7,7 @@ import (
 	"data-processing-service/config"
 	"data-processing-service/internal/repo/pg"
 	"data-processing-service/internal/services"
+	"data-processing-service/internal/transport/http"
 	messagelisteners "data-processing-service/internal/transport/nats/messages"
 	tagslistener "data-processing-service/internal/transport/nats/tags"
 	"data-processing-service/pkg/closer"
@@ -73,6 +74,23 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 		Log:         log,
 	})
 
+	httpServer := http.NewServer(http.Config{
+		Log:            log,
+		JwtKey:         cfg.Server.JwtKey,
+		Addr:           cfg.Server.Addr,
+		LogQuerys:      cfg.Server.LogQuerys,
+		ReportsHandler: messagesService,
+	})
+
+	go func() {
+		if err = httpServer.Run(); err != nil {
+			log.Error(fmt.Sprintf("error occurred while running HTTP server: %v", err))
+			stop()
+		}
+	}()
+
+	log.Info("start http server", zap.String("listen_on", cfg.Server.Addr))
+
 	go func() {
 		if err = messagesListeners.Listen(); err != nil {
 			log.Error(fmt.Errorf("error occurred while running messagesListeners: %w", err).Error())
@@ -98,6 +116,7 @@ func Run(ctx context.Context, cfg *config.Config, stop context.CancelFunc) {
 
 	closer.Add(nats.Close)
 	closer.Add(postgresDB.Close)
+	closer.Add(httpServer.Stop)
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.App.ShutdownTimeout)
 	defer cancel()

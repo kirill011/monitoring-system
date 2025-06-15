@@ -154,6 +154,10 @@ services:
       NATS_URL: nats:4222
       SERVICE_NOTIFICATION_PERIOD: 5m
       NATS_TIMEOUT: 30m
+      SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
+      SERVER_ADDR: :13693
+      SERVER_TOKEN_LIFE_TIME: 3h
+      SERVER_LOG_QUERYS: "false"
     depends_on:
       device-management-service:
         condition: service_started

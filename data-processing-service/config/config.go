@@ -15,6 +15,7 @@ type Config struct {
 	Service  ServiceConfig
 	App      AppConfig
 	Nats     NatsConfig
+	Server   ServerConfig
 }
 
 type Logger struct {
@@ -40,6 +41,13 @@ type NatsConfig struct {
 
 type ServiceConfig struct {
 	NotificationPeriod time.Duration `env:"SERVICE_NOTIFICATION_PERIOD,required"`
+}
+
+type ServerConfig struct {
+	JwtKey        string        `env:"SERVER_JWT_KEY,required"`
+	Addr          string        `env:"SERVER_ADDR,required"`
+	TokenLifeTime time.Duration `env:"SERVER_TOKEN_LIFE_TIME,required"`
+	LogQuerys     bool          `env:"SERVER_LOG_QUERYS"`
 }
 
 var (
