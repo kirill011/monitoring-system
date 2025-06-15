@@ -155,9 +155,13 @@ services:
       SERVICE_NOTIFICATION_PERIOD: 5m
       NATS_TIMEOUT: 30m
       SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
-      SERVER_ADDR: :13693
+      SERVER_ADDR: :13695
       SERVER_TOKEN_LIFE_TIME: 3h
       SERVER_LOG_QUERYS: "false"
+    ports:
+      - 13695:13695
+    expose:
+      - 13695
     depends_on:
       device-management-service:
         condition: service_started
