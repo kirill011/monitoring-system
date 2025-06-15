@@ -47,28 +47,7 @@ func NewMessagesService(cfg Config) Messages {
 		log:         cfg.Log,
 	}
 	messagesService.UpdateTags()
-	messagesService.setNotificationCron(messagesService.notificationPeriod)
 	return messagesService
-}
-
-var sendedNotification = map[int32][]models.SendedNotification{}
-
-func (s *MessagesService) setNotificationCron(notificationPeriod time.Duration) {
-	s.cron = cron.New(cron.WithSeconds())
-
-	_, err := s.cron.AddFunc("*/5 * * * * *", func() {
-		for _, notificationArray := range sendedNotification {
-			for i, notification := range notificationArray {
-				if notification.ExpiredAt.After(time.Now()) {
-					sendedNotification[notification.DeviceId] = append(sendedNotification[notification.DeviceId][:i], sendedNotification[notification.DeviceId][i+1:]...)
-				}
-			}
-		}
-	})
-
-	if err != nil {
-		s.log.Fatal("cron.AddFunc", zap.Error(err))
-	}
 }
 
 var (
@@ -175,10 +154,6 @@ type (
 )
 
 func (ms *MessagesService) Create(opts models.Message) (CreateMessageResponse, bool, error) {
-	if ms.checkNotifyIsSended(opts) {
-		return CreateMessageResponse{}, false, nil
-	}
-
 	resp, err := ms.handleMessage(opts)
 	if err != nil {
 		return CreateMessageResponse{}, false, fmt.Errorf("ms.handleMessage: %w", err)
@@ -256,20 +231,6 @@ func (ms *MessagesService) handleReversedTag(tag models.Tag) {
 			ms.log.Error("ms.tagRepo.Create", zap.Error(err), zap.Any("tag", reversedTag))
 		}
 	}
-}
-
-func (ms *MessagesService) checkNotifyIsSended(opts models.Message) bool {
-	notificationArray, ok := sendedNotification[opts.DeviceId]
-	if !ok {
-		return false
-	}
-
-	for _, notification := range notificationArray {
-		if notification.Message == opts.Message {
-			return true
-		}
-	}
-	return false
 }
 
 type (
