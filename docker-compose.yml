@@ -1,18 +1,17 @@
 services:
-  # Odyssey для auth-service
-  odyssey-auth:
+  odyssey-microservices:
     build:
       context: ./odyssey
       dockerfile: Dockerfile
     command: odyssey /etc/odyssey/odyssey.conf
     volumes:
-      - ./odyssey/auth/odyssey.conf:/etc/odyssey/odyssey.conf
+      - ./odyssey/microservices/odyssey.conf:/etc/odyssey/odyssey.conf
     ports:
       - 6432:6432
     networks:
       - nats
     depends_on:
-      postgres-auth:
+      postgres-microservices:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6432' || exit 1"]
@@ -20,49 +19,6 @@ services:
       timeout: 3s
       retries: 10
 
-  # Odyssey для device-management-service
-  odyssey-device-management:
-    build:
-      context: ./odyssey
-      dockerfile: Dockerfile
-    command: odyssey /etc/odyssey/odyssey.conf
-    volumes:
-      - ./odyssey/device-management/odyssey.conf:/etc/odyssey/odyssey.conf
-    ports:
-      - 6433:6433
-    networks:
-      - nats
-    depends_on:
-      postgres-device-management:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6433' || exit 1"]
-      interval: 3s
-      timeout: 3s
-      retries: 10
-
-  # Odyssey для data-processing-service
-  odyssey-data-processing:
-    build:
-      context: ./odyssey
-      dockerfile: Dockerfile
-    command: odyssey /etc/odyssey/odyssey.conf
-    volumes:
-      - ./odyssey/data-processing/odyssey.conf:/etc/odyssey/odyssey.conf
-    ports:
-      - 6434:6434
-    networks:
-      - nats
-    depends_on:
-      postgres-data-processing:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/6434' || exit 1"]
-      interval: 3s
-      timeout: 3s
-      retries: 10
-
-  # Обновленные сервисы
   auth-service:
     build:
       context: ./auth-service
@@ -79,17 +35,17 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: auth-service
       LOG_PATH: /var/log/auth-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-auth:6432/postgres?sslmode=disable
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-microservices:6432/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: auth
       TOKEN_JWT_KEY: kg#n5Q2SP7A4/T.v
       TOKEN_LIFE_TIME: 3h
       APP_SHUTDOWN_TIMEOUT: 30s
-      NATS_URL: nats:4222  # Используем имя сервиса
+      NATS_URL: nats:4222 
     depends_on:
       nats:
         condition: service_started
-      odyssey-auth:
+      odyssey-microservices:
         condition: service_healthy
       promtail: 
         condition: service_started
@@ -112,7 +68,7 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: device-management-service
       LOG_PATH: /var/log/device-management-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-device-management:6433/postgres?sslmode=disable
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-microservices:6432/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: devices
       SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
@@ -123,7 +79,7 @@ services:
     depends_on:
       auth-service:
         condition: service_started
-      odyssey-device-management:
+      odyssey-microservices:
         condition: service_healthy
       nats: 
         condition: service_started
@@ -147,7 +103,7 @@ services:
       LOG_LEVEL: info
       LOG_SERVICE_NAME: data-processing-service
       LOG_PATH: /var/log/data-processing-service
-      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-data-processing:6434/postgres?sslmode=disable
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-microservices:6432/postgres?sslmode=disable
       DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
       DB_APPLICATION_SCHEMA: dataprocessing
       APP_SHUTDOWN_TIMEOUT: 30s
@@ -165,7 +121,7 @@ services:
     depends_on:
       device-management-service:
         condition: service_started
-      odyssey-data-processing:
+      odyssey-microservices:
         condition: service_healthy
       nats:
         condition: service_started
@@ -174,7 +130,6 @@ services:
     labels:
       logging: "promtail"
 
-  # Остальные сервисы без изменений (только обновим NATS_URL)
   notification-service:
     build:
       context: ./notification-service
@@ -296,7 +251,7 @@ services:
       logging: "promtail"
 
   # Без изменений
-  postgres-auth:
+  postgres-microservices:
     image: postgres
     command: 
     - -p 5434
@@ -321,60 +276,11 @@ services:
     networks:
       - nats
 
-  postgres-device-management:
-    image: postgres
-    command: 
-    - -p 5435
-    - -c 
-    - hba_file=/var/lib/postgresql/data/pg_hba.conf
-    - -c 
-    - password_encryption=md5
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1789
-      POSTGRES_DB: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -p 5435"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      - 5435:5435
-    volumes:
-      - postgres-device-management-db:/var/lib/postgresql/data
-      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-    networks:
-      - nats
-
-  postgres-data-processing:
-    image: postgres
-    command: 
-    - -p 5436
-    - -c 
-    - hba_file=/var/lib/postgresql/data/pg_hba.conf
-    - -c 
-    - password_encryption=md5
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1789
-      POSTGRES_DB: postgres
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -p 5436"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      - 5436:5436
-    volumes:
-      - postgres-data-processing-db:/var/lib/postgresql/data
-      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-    networks:
-      - nats
-  postgres-auth-exporter:
+  postgres-microservices-exporter:
     command: '--no-collector.stat_bgwriter'
     image: quay.io/prometheuscommunity/postgres-exporter
     environment:
-      DATA_SOURCE_URI: "postgres-auth:5434/postgres?sslmode=disable"
+      DATA_SOURCE_URI: "postgres-microservices:5434/postgres?sslmode=disable"
       DATA_SOURCE_USER: postgres
       DATA_SOURCE_PASS: 1789
       PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
@@ -385,40 +291,7 @@ services:
     networks:
       - nats
     depends_on:
-      - postgres-auth
-
-  postgres-device-management-exporter:
-    command: '--no-collector.stat_bgwriter'
-    image: quay.io/prometheuscommunity/postgres-exporter
-    environment:
-      DATA_SOURCE_URI: "postgres-device-management:5435/postgres?sslmode=disable"
-      DATA_SOURCE_USER: postgres
-      DATA_SOURCE_PASS: 1789
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
-    volumes:
-      - ./queries.yaml:/etc/postgres_exporter/queries.yaml:ro
-    ports:
-      - "9188:9187"
-    networks:
-      - nats
-    depends_on:
-      - postgres-device-management
-  postgres-data-processing-exporter:
-    command: '--no-collector.stat_bgwriter'
-    image: quay.io/prometheuscommunity/postgres-exporter
-    environment:
-      DATA_SOURCE_URI: "postgres-data-processing:5436/postgres?sslmode=disable"
-      DATA_SOURCE_USER: postgres
-      DATA_SOURCE_PASS: 1789
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
-    volumes:
-      - ./queries.yaml:/etc/postgres_exporter/queries.yaml:ro
-    ports:
-      - "9189:9187"
-    networks:
-      - nats
-    depends_on:
-      - postgres-data-processing
+      - postgres-microservices
 
   nats:
     image: nats:latest
@@ -482,9 +355,7 @@ services:
         condition: service_started
 
 volumes:
-  postgres-auth-db:
-  postgres-device-management-db:
-  postgres-data-processing-db:
+  postgres-microservices-db:
 
 networks:
   nats:

@@ -36,16 +36,6 @@ func NewPostgres(cfg Config) (*Postgres, error) {
 		return nil, fmt.Errorf("create schema: %w", err)
 	}
 
-	var dbName []string
-	err = conn.Select(&dbName, "SELECT current_database()")
-	if err != nil {
-		return nil, fmt.Errorf("get current database: %w", err)
-	}
-
-	if _, err := conn.Exec(fmt.Sprintf("ALTER DATABASE %s SET search_path TO %s,public;", dbName[0], cfg.ApplicationSchema)); err != nil {
-		return nil, fmt.Errorf("use schema: %w", err)
-	}
-
 	return &Postgres{
 		DB: conn,
 	}, nil
