@@ -271,8 +271,8 @@ services:
     ports:
       - 5434:5434
     volumes:
-      - postgres-microservices-db:/var/lib/postgresql/data/micro
-      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/mikro/pg_hba.conf
+      - postgres-microservices-db:/var/lib/postgresql/data
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
 
