@@ -263,6 +263,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1789
       POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/micro/
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -p 5434"]
       interval: 5s
@@ -271,7 +272,7 @@ services:
     ports:
       - 5434:5434
     volumes:
-      - postgres-microservices-db:/var/lib/postgresql/data
+      - postgres-microservices-db:/var/lib/postgresql/data/micro
       - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
