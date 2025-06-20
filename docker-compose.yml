@@ -256,7 +256,7 @@ services:
     command: 
     - -p 5434
     - -c 
-    - hba_file=/var/lib/postgresql/data/pg_hba.conf
+    - hba_file=/var/lib/postgresql/data/micro/pg_hba.conf
     - -c 
     - password_encryption=md5
     environment:
@@ -273,7 +273,7 @@ services:
       - 5434:5434
     volumes:
       - postgres-microservices-db:/var/lib/postgresql/data/micro
-      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/micro/pg_hba.conf
     networks:
       - nats
 
