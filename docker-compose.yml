@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     command: odyssey /etc/odyssey/odyssey.conf
     volumes:
-      - ./odyssey/microservices/odyssey.conf:/etc/odyssey/odyssey.conf
+      - ./odyssey/auth/odyssey.conf:/etc/odyssey/odyssey.conf
     ports:
       - 6432:6432
     networks:
