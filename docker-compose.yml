@@ -249,6 +249,10 @@ services:
         condition: service_started
     labels:
       logging: "promtail"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
 
   postgres-microservices:
     image: postgres
