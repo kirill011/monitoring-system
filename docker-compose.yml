@@ -129,6 +129,11 @@ services:
         condition: service_started
     labels:
       logging: "promtail"
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.5'
+          memory: 50M
 
   notification-service:
     build:
