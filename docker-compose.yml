@@ -250,7 +250,6 @@ services:
     labels:
       logging: "promtail"
 
-  # Без изменений
   postgres-microservices:
     image: postgres
     command: 
@@ -276,6 +275,10 @@ services:
       - ./postgres-config/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     networks:
       - nats
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
 
   postgres-microservices-exporter:
     command: '--no-collector.stat_bgwriter'
