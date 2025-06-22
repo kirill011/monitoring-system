@@ -127,6 +127,7 @@ services:
         condition: service_started
       promtail: 
         condition: service_started
+    cpu_shares: 2048
     labels:
       logging: "promtail"
     deploy:
