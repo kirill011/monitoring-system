@@ -130,11 +130,46 @@ services:
     cpu_shares: 2048
     labels:
       logging: "promtail"
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 50M
+
+  data-processing-service-1:
+    build:
+      context: ./data-processing-service
+      dockerfile: Dockerfile
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    volumes:
+      - .:/app/data-processing-service
+    networks:
+      - nats
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: info
+      LOG_SERVICE_NAME: data-processing-service
+      LOG_PATH: /var/log/data-processing-service
+      DB_DATA_SOURCE: postgres://postgres:1789@odyssey-microservices:6432/postgres?sslmode=disable
+      DB_PATH_TO_MIGRATION: file://internal/repo/pg/migration
+      DB_APPLICATION_SCHEMA: dataprocessing
+      APP_SHUTDOWN_TIMEOUT: 30s
+      NATS_URL: nats:4222
+      SERVICE_NOTIFICATION_PERIOD: 5m
+      NATS_TIMEOUT: 30m
+      SERVER_JWT_KEY: kg#n5Q2SP7A4/T.v
+      SERVER_ADDR: :13694
+      SERVER_TOKEN_LIFE_TIME: 3h
+      SERVER_LOG_QUERYS: "false"
+    depends_on:
+      device-management-service:
+        condition: service_started
+      odyssey-microservices:
+        condition: service_healthy
+      nats:
+        condition: service_started
+      promtail: 
+        condition: service_started
+    cpu_shares: 2048
+    labels:
+      logging: "promtail"
+
 
   notification-service:
     build:
