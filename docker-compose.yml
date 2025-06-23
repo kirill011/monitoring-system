@@ -130,6 +130,11 @@ services:
     cpu_shares: 4096
     labels:
       logging: "promtail"
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.4'
+          memory: 50M
 
   data-processing-service-1:
     build:
@@ -169,6 +174,11 @@ services:
     cpu_shares: 4096
     labels:
       logging: "promtail"
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.4'
+          memory: 50M
 
 
   notification-service:
