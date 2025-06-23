@@ -127,7 +127,7 @@ services:
         condition: service_started
       promtail: 
         condition: service_started
-    cpu_shares: 2048
+    cpu_shares: 4096
     labels:
       logging: "promtail"
 
@@ -166,7 +166,7 @@ services:
         condition: service_started
       promtail: 
         condition: service_started
-    cpu_shares: 2048
+    cpu_shares: 4096
     labels:
       logging: "promtail"
 
